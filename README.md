@@ -1,36 +1,178 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TrueHub - 리워드 앱 체험/피드백 플랫폼
 
-## Getting Started
+실사용자 피드백으로 앱을 성장시키는 AI 기반 피드백 분석 플랫폼
 
-First, run the development server:
+## 🚀 Features
+
+### For Advertisers
+
+- 캠페인 생성 및 관리
+- AI 기반 피드백 인사이트 분석 (GPT-4o-mini)
+- 크레딧 기반 결제 시스템
+- 실시간 참여 현황 대시보드
+
+### For Testers
+
+- 다양한 앱 체험 캠페인
+- 소셜 로그인 (카카오, 네이버, 구글)
+- 스크린샷 + 피드백 제출
+- 포인트 리워드 지급
+
+### For Admins
+
+- 참여 심사 및 승인/반려
+- 리워드 지급 관리
+- 사기 탐지 시스템 (pHash, 행동 분석)
+- 충전 요청 승인
+- 감사 로그
+
+## 🛠 Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Database**: PostgreSQL (Supabase)
+- **ORM**: Prisma 6
+- **Auth**: NextAuth.js + TOTP (Admin)
+- **Storage**: Supabase Storage
+- **AI**: OpenAI GPT-4o-mini
+- **Email**: Resend
+- **UI**: Tailwind CSS + shadcn/ui
+
+## 📦 Installation
 
 ```bash
+# Clone repository
+git clone https://github.com/your-org/truehub.git
+cd truehub
+
+# Install dependencies
+npm install
+
+# Setup environment variables
+cp .env.example .env
+# Edit .env with your values
+
+# Generate Prisma client
+npx prisma generate
+
+# Run migrations
+npx prisma migrate dev
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔧 Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Database
+DATABASE_URL="postgresql://..."
+DIRECT_URL="postgresql://..."
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL="https://xxx.supabase.co"
+SUPABASE_SERVICE_ROLE_KEY="eyJ..."
 
-## Learn More
+# Auth
+NEXTAUTH_SECRET="your-secret"
+NEXTAUTH_URL="http://localhost:3000"
 
-To learn more about Next.js, take a look at the following resources:
+# OAuth Providers
+KAKAO_CLIENT_ID=""
+KAKAO_CLIENT_SECRET=""
+NAVER_CLIENT_ID=""
+NAVER_CLIENT_SECRET=""
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# External Services
+OPENAI_API_KEY="sk-..."
+RESEND_API_KEY="re_..."
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📁 Project Structure
 
-## Deploy on Vercel
+```
+src/
+├── app/
+│   ├── (marketing)/     # Landing page
+│   ├── admin/           # Admin dashboard
+│   ├── advertiser/      # Advertiser portal
+│   ├── tester/          # Tester mobile web
+│   └── api/v1/          # API routes
+├── components/
+│   └── ui/              # shadcn/ui components
+├── lib/
+│   ├── jobs/            # Background job handlers
+│   └── auth/            # Auth utilities
+└── infra/
+    └── db/              # Prisma client
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔐 User Roles
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Role             | Auth Method           | Access         |
+| ---------------- | --------------------- | -------------- |
+| Tester           | Social OAuth          | /tester/\*     |
+| Advertiser       | Email/Password        | /advertiser/\* |
+| Admin (Operator) | Email/Password + TOTP | /admin/\*      |
+
+## 📊 Job Queue
+
+Background jobs are processed via `/api/v1/jobs/run`:
+
+- `PHASH_CALC` - Image perceptual hash calculation
+- `FRAUD_CHECK` - Fraud score calculation
+- `AI_REPORT` - AI insight generation
+- `SEND_EMAIL` - Email notifications
+
+Trigger manually or via cron:
+
+```bash
+curl -X POST http://localhost:3000/api/v1/jobs/run
+```
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
+1. Connect GitHub repository to Vercel
+2. Add environment variables
+3. Deploy
+
+### Manual Build
+
+```bash
+npm run build
+npm start
+```
+
+## 📝 API Documentation
+
+See `.claude/docs/03_API_CONTRACTS.md` for full API documentation.
+
+### Key Endpoints
+
+| Method | Endpoint                                 | Description           |
+| ------ | ---------------------------------------- | --------------------- |
+| GET    | /api/v1/campaigns                        | List public campaigns |
+| POST   | /api/v1/participations                   | Submit participation  |
+| POST   | /api/v1/advertiser/campaigns             | Create campaign       |
+| POST   | /api/v1/admin/participations/:id/approve | Approve participation |
+
+## 🔒 Security
+
+- TOTP 2FA for admin access
+- pHash + SHA256 image duplicate detection
+- Fraud scoring with auto-rejection
+- Audit logging for all admin actions
+- Input validation with Zod
+
+See `.claude/docs/SECURITY_CHECKLIST.md` for full security review.
+
+## 📄 License
+
+MIT License - see LICENSE file for details.
+
+---
+
+Built with ❤️ by TrueHub Team

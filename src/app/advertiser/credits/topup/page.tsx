@@ -1,0 +1,255 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ChevronLeft, Loader2, Copy, Check } from "lucide-react";
+
+interface TopupResult {
+  id: string;
+  amount: number;
+  depositCode: string;
+  expiresAt: string;
+  bankInfo: {
+    bankName: string;
+    accountNumber: string;
+    accountHolder: string;
+    depositMessage: string;
+  } | null;
+}
+
+const PRESET_AMOUNTS = [50000, 100000, 300000, 500000, 1000000];
+
+export default function TopupPage() {
+  const router = useRouter();
+  const [amount, setAmount] = useState("");
+  const [method, setMethod] = useState<"BANK_TRANSFER" | "STRIPE">("BANK_TRANSFER");
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<TopupResult | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const numAmount = parseInt(amount.replace(/,/g, ""));
+    if (isNaN(numAmount) || numAmount < 10000) {
+      toast.error("최소 10,000원 이상 충전해야 합니다");
+      return;
+    }
+
+    if (numAmount > 10000000) {
+      toast.error("최대 10,000,000원까지 충전 가능합니다");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/v1/advertiser/topups", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: numAmount, method }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error?.message || "충전 요청에 실패했습니다");
+        return;
+      }
+
+      setResult(data.data);
+      toast.success("충전 요청이 생성되었습니다");
+    } catch {
+      toast.error("오류가 발생했습니다");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const formatAmount = (value: string) => {
+    const num = value.replace(/\D/g, "");
+    return num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    toast.success("복사되었습니다");
+  };
+
+  if (result) {
+    return (
+      <div className="mx-auto max-w-lg">
+        <div className="mb-6 flex items-center gap-4">
+          <Link href="/advertiser/credits">
+            <Button variant="ghost" size="icon" className="h-9 w-9">
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+          </Link>
+          <h1 className="text-2xl font-bold text-slate-900">충전 요청 완료</h1>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-center text-green-600">입금 안내</CardTitle>
+            <CardDescription className="text-center">아래 정보로 입금해주세요</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="rounded-lg bg-slate-50 p-4 text-center">
+              <p className="text-sm text-slate-500">충전 금액</p>
+              <p className="text-3xl font-bold text-slate-900">
+                {result.amount.toLocaleString()}원
+              </p>
+            </div>
+
+            {result.bankInfo && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between rounded-lg border p-4">
+                  <div>
+                    <p className="text-sm text-slate-500">입금 은행</p>
+                    <p className="font-medium">{result.bankInfo.bankName}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between rounded-lg border p-4">
+                  <div>
+                    <p className="text-sm text-slate-500">계좌번호</p>
+                    <p className="font-medium">{result.bankInfo.accountNumber}</p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => copyToClipboard(result.bankInfo!.accountNumber)}
+                  >
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between rounded-lg border p-4">
+                  <div>
+                    <p className="text-sm text-slate-500">예금주</p>
+                    <p className="font-medium">{result.bankInfo.accountHolder}</p>
+                  </div>
+                </div>
+
+                <div className="border-primary/20 bg-primary/5 rounded-lg border p-4">
+                  <p className="text-sm text-slate-500">입금자명 (필수)</p>
+                  <p className="text-primary text-lg font-bold">{result.depositCode}</p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    반드시 위 코드를 입금자명으로 입력해주세요
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="rounded-lg bg-amber-50 p-4 text-sm text-amber-700">
+              <p className="font-medium">주의사항</p>
+              <ul className="mt-2 list-inside list-disc space-y-1">
+                <li>입금자명을 반드시 코드로 입력해주세요</li>
+                <li>입금 확인 후 자동으로 크레딧이 충전됩니다 (영업일 기준 1-2시간 소요)</li>
+                <li>유효기간: {new Date(result.expiresAt).toLocaleString("ko-KR")}</li>
+              </ul>
+            </div>
+
+            <Button className="w-full" onClick={() => router.push("/advertiser/credits")}>
+              확인
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-lg">
+      <div className="mb-6 flex items-center gap-4">
+        <Link href="/advertiser/credits">
+          <Button variant="ghost" size="icon" className="h-9 w-9">
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+        </Link>
+        <h1 className="text-2xl font-bold text-slate-900">크레딧 충전</h1>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>충전 금액 선택</CardTitle>
+          <CardDescription>충전할 금액을 선택하거나 직접 입력하세요</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-3 gap-2">
+              {PRESET_AMOUNTS.map((preset) => (
+                <Button
+                  key={preset}
+                  type="button"
+                  variant={amount === preset.toString() ? "default" : "outline"}
+                  onClick={() => setAmount(preset.toString())}
+                >
+                  {(preset / 10000).toLocaleString()}만원
+                </Button>
+              ))}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="amount">직접 입력</Label>
+              <div className="relative">
+                <Input
+                  id="amount"
+                  type="text"
+                  placeholder="금액 입력"
+                  value={formatAmount(amount)}
+                  onChange={(e) => setAmount(e.target.value.replace(/,/g, ""))}
+                  className="pr-8"
+                />
+                <span className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400">원</span>
+              </div>
+              <p className="text-xs text-slate-500">최소 10,000원 ~ 최대 10,000,000원</p>
+            </div>
+
+            <div className="space-y-3">
+              <Label>결제 방법</Label>
+              <RadioGroup
+                value={method}
+                onValueChange={(v) => setMethod(v as "BANK_TRANSFER" | "STRIPE")}
+              >
+                <div className="flex items-center space-x-2 rounded-lg border p-4">
+                  <RadioGroupItem value="BANK_TRANSFER" id="bank" />
+                  <Label htmlFor="bank" className="flex-1 cursor-pointer">
+                    <span className="font-medium">무통장 입금</span>
+                    <span className="block text-sm text-slate-500">신한은행 계좌로 직접 입금</span>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2 rounded-lg border p-4 opacity-50">
+                  <RadioGroupItem value="STRIPE" id="stripe" disabled />
+                  <Label htmlFor="stripe" className="flex-1">
+                    <span className="font-medium">카드 결제</span>
+                    <span className="block text-sm text-slate-500">준비 중</span>
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <Button type="submit" className="w-full" disabled={isLoading || !amount}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  처리 중...
+                </>
+              ) : (
+                "충전 요청하기"
+              )}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

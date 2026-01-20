@@ -1,0 +1,415 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AuthProvider {
+  KAKAO
+  NAVER
+  GOOGLE
+}
+
+enum CampaignStatus {
+  DRAFT
+  RUNNING
+  PAUSED
+  CLOSED
+  SETTLING
+  COMPLETED
+}
+
+enum ParticipationStatus {
+  SUBMITTED
+  AUTO_REJECTED
+  PENDING_REVIEW
+  MANUAL_REVIEW
+  APPROVED
+  REJECTED
+  PAID
+}
+
+enum FraudDecision {
+  PASS
+  REVIEW
+  REJECT
+}
+
+enum CreditTxType {
+  TOPUP
+  CONSUME
+  REFUND
+  ADJUST
+}
+
+enum TopupStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum TopupMethod {
+  BANK_TRANSFER
+  STRIPE
+}
+
+enum RewardStatus {
+  REQUESTED
+  SENT
+  FAILED
+}
+
+enum JobType {
+  FRAUD_CHECK
+  PHASH_CALC
+  TEXT_SIMILARITY
+  AI_REPORT
+  SEND_EMAIL
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  DEAD
+}
+
+enum JobPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model User {
+  id                String    @id @default(uuid())
+  provider          AuthProvider
+  providerUserId    String    @map("provider_user_id")
+  email             String?
+  profileName       String?   @map("profile_name")
+  deviceFingerprint String?   @map("device_fingerprint")
+  isBanned          Boolean   @default(false) @map("is_banned")
+  banReason         String?   @map("ban_reason")
+  lastLoginAt       DateTime? @map("last_login_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  participations    Participation[]
+  rewards           Reward[]
+
+  @@unique([provider, providerUserId])
+  @@map("users")
+}
+
+model Advertiser {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String    @map("password_hash")
+  companyName   String    @map("company_name")
+  businessType  String?   @map("business_type")
+  contactName   String?   @map("contact_name")
+  contactPhone  String?   @map("contact_phone")
+  isActive      Boolean   @default(true) @map("is_active")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  campaigns     Campaign[]
+  creditWallet  CreditWallet?
+  topupRequests TopupRequest[]
+
+  @@map("advertisers")
+}
+
+model Operator {
+  id                     String    @id @default(uuid())
+  email                  String    @unique
+  passwordHash           String    @map("password_hash")
+  name                   String
+  totpSecret             String?   @map("totp_secret")
+  totpEnabled            Boolean   @default(false) @map("totp_enabled")
+  isActive               Boolean   @default(true) @map("is_active")
+  lastLoginAt            DateTime? @map("last_login_at")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+
+  approvedParticipations Participation[] @relation("ApprovedBy")
+  processedRewards       Reward[]        @relation("ProcessedBy")
+  confirmedTopups        TopupRequest[]  @relation("ConfirmedBy")
+  auditLogs              AuditLog[]
+
+  @@map("operators")
+}
+
+model Campaign {
+  id               String         @id @default(uuid())
+  advertiserId     String         @map("advertiser_id")
+  title            String
+  description      String
+  appLinkIos       String?        @map("app_link_ios")
+  appLinkAndroid   String?        @map("app_link_android")
+  targetCount      Int            @map("target_count")
+  currentCount     Int            @default(0) @map("current_count")
+  rewardAmount     Int            @map("reward_amount")
+  creditCostPerValid Int          @map("credit_cost_per_valid")
+  status           CampaignStatus @default(DRAFT)
+  startAt          DateTime?      @map("start_at")
+  endAt            DateTime       @map("end_at")
+  closedAt         DateTime?      @map("closed_at")
+  completedAt      DateTime?      @map("completed_at")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  advertiser       Advertiser     @relation(fields: [advertiserId], references: [id])
+  questions        CampaignQuestion[]
+  participations   Participation[]
+  aiInsights       AiInsight[]
+
+  @@index([advertiserId])
+  @@index([status])
+  @@index([endAt])
+  @@map("campaigns")
+}
+
+model CampaignQuestion {
+  id            String   @id @default(uuid())
+  campaignId    String   @map("campaign_id")
+  questionOrder Int      @map("question_order")
+  questionText  String   @map("question_text")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  campaign      Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, questionOrder])
+  @@map("campaign_questions")
+}
+
+model Participation {
+  id            String              @id @default(uuid())
+  campaignId    String              @map("campaign_id")
+  userId        String              @map("user_id")
+  answer1       String
+  answer2       String
+  feedback      String
+  status        ParticipationStatus @default(SUBMITTED)
+  fraudScore    Int?                @map("fraud_score")
+  fraudDecision FraudDecision?      @map("fraud_decision")
+  fraudReasons  String[]            @map("fraud_reasons")
+  reviewerId    String?             @map("reviewer_id")
+  reviewedAt    DateTime?           @map("reviewed_at")
+  rejectReason  String?             @map("reject_reason")
+  submittedAt   DateTime            @default(now()) @map("submitted_at")
+  createdAt     DateTime            @default(now()) @map("created_at")
+  updatedAt     DateTime            @updatedAt @map("updated_at")
+
+  campaign      Campaign            @relation(fields: [campaignId], references: [id])
+  user          User                @relation(fields: [userId], references: [id])
+  reviewer      Operator?           @relation("ApprovedBy", fields: [reviewerId], references: [id])
+  assets        ParticipationAsset[]
+  fraudSignals  FraudSignal[]
+  reward        Reward?
+
+  @@unique([campaignId, userId])
+  @@index([campaignId])
+  @@index([userId])
+  @@index([status])
+  @@map("participations")
+}
+
+model ParticipationAsset {
+  id              String   @id @default(uuid())
+  participationId String   @map("participation_id")
+  slot            Int
+  storageKey      String   @map("storage_key")
+  originalFilename String? @map("original_filename")
+  mimeType        String?  @map("mime_type")
+  fileSize        Int?     @map("file_size")
+  phash           String?
+  sha256          String?
+  ocrText         String?  @map("ocr_text")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  participation   Participation @relation(fields: [participationId], references: [id], onDelete: Cascade)
+
+  @@unique([participationId, slot])
+  @@index([phash])
+  @@index([sha256])
+  @@map("participation_assets")
+}
+
+model FraudSignal {
+  id              String   @id @default(uuid())
+  participationId String   @map("participation_id")
+  signalType      String   @map("signal_type")
+  signalValue     String   @map("signal_value")
+  score           Int
+  details         Json?
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  participation   Participation @relation(fields: [participationId], references: [id], onDelete: Cascade)
+
+  @@index([participationId])
+  @@map("fraud_signals")
+}
+
+model CreditWallet {
+  id            String   @id @default(uuid())
+  advertiserId  String   @unique @map("advertiser_id")
+  balance       Int      @default(0)
+  totalTopup    Int      @default(0) @map("total_topup")
+  totalConsumed Int      @default(0) @map("total_consumed")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  advertiser    Advertiser @relation(fields: [advertiserId], references: [id])
+  transactions  CreditTransaction[]
+
+  @@map("credit_wallets")
+}
+
+model CreditTransaction {
+  id           String       @id @default(uuid())
+  walletId     String       @map("wallet_id")
+  type         CreditTxType
+  amount       Int
+  balanceAfter Int          @map("balance_after")
+  refType      String?      @map("ref_type")
+  refId        String?      @map("ref_id")
+  description  String?
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  wallet       CreditWallet @relation(fields: [walletId], references: [id])
+
+  @@index([walletId])
+  @@index([refType, refId])
+  @@map("credit_transactions")
+}
+
+model TopupRequest {
+  id              String       @id @default(uuid())
+  advertiserId    String       @map("advertiser_id")
+  amount          Int
+  method          TopupMethod
+  depositCode     String       @unique @map("deposit_code")
+  status          TopupStatus  @default(PENDING)
+  stripePaymentId String?      @map("stripe_payment_id")
+  confirmedById   String?      @map("confirmed_by_id")
+  confirmedAt     DateTime?    @map("confirmed_at")
+  expiresAt       DateTime     @map("expires_at")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  advertiser      Advertiser   @relation(fields: [advertiserId], references: [id])
+  confirmedBy     Operator?    @relation("ConfirmedBy", fields: [confirmedById], references: [id])
+
+  @@index([advertiserId])
+  @@index([depositCode])
+  @@index([status])
+  @@map("topup_requests")
+}
+
+model Reward {
+  id              String       @id @default(uuid())
+  participationId String       @unique @map("participation_id")
+  userId          String       @map("user_id")
+  amount          Int
+  status          RewardStatus @default(REQUESTED)
+  method          String?
+  sentAt          DateTime?    @map("sent_at")
+  proofText       String?      @map("proof_text")
+  proofImageKey   String?      @map("proof_image_key")
+  processedById   String?      @map("processed_by_id")
+  failReason      String?      @map("fail_reason")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  participation   Participation @relation(fields: [participationId], references: [id])
+  user            User          @relation(fields: [userId], references: [id])
+  processedBy     Operator?     @relation("ProcessedBy", fields: [processedById], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("rewards")
+}
+
+model AiInsight {
+  id                 String   @id @default(uuid())
+  campaignId         String   @map("campaign_id")
+  version            Int      @default(1)
+  participationCount Int      @map("participation_count")
+  summary            String?
+  pros               Json?
+  cons               Json?
+  onboardingIssues   Json?    @map("onboarding_issues")
+  keywords           Json?
+  sentiment          Json?
+  themes             Json?
+  rawData            Json?    @map("raw_data")
+  generatedAt        DateTime @default(now()) @map("generated_at")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  campaign           Campaign @relation(fields: [campaignId], references: [id])
+
+  @@index([campaignId])
+  @@map("ai_insights")
+}
+
+model Job {
+  id           String      @id @default(uuid())
+  type         JobType
+  payload      Json
+  status       JobStatus   @default(PENDING)
+  priority     JobPriority @default(MEDIUM)
+  attempts     Int         @default(0)
+  maxAttempts  Int         @default(3) @map("max_attempts")
+  scheduledAt  DateTime    @default(now()) @map("scheduled_at")
+  startedAt    DateTime?   @map("started_at")
+  completedAt  DateTime?   @map("completed_at")
+  failedAt     DateTime?   @map("failed_at")
+  errorMessage String?     @map("error_message")
+  result       Json?
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  @@index([status, scheduledAt])
+  @@index([type, status])
+  @@map("jobs")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  operatorId String?  @map("operator_id")
+  action     String
+  targetType String   @map("target_type")
+  targetId   String   @map("target_id")
+  details    Json?
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  operator   Operator? @relation(fields: [operatorId], references: [id])
+
+  @@index([operatorId])
+  @@index([targetType, targetId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model EmailLog {
+  id              String    @id @default(uuid())
+  recipientEmail  String    @map("recipient_email")
+  recipientType   String    @map("recipient_type")
+  recipientId     String    @map("recipient_id")
+  templateType    String    @map("template_type")
+  subject         String
+  status          String
+  resendMessageId String?   @map("resend_message_id")
+  errorMessage    String?   @map("error_message")
+  sentAt          DateTime? @map("sent_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@index([recipientId])
+  @@index([templateType])
+  @@map("email_logs")
+}
