@@ -99,10 +99,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
           },
         });
 
-        await tx.participation.update({
-          where: { id: reward.participationId },
-          data: { status: "PAID" },
-        });
+        if (reward.participationId) {
+          await tx.participation.update({
+            where: { id: reward.participationId },
+            data: { status: "PAID" },
+          });
+        }
       });
 
       await prisma.auditLog.create({
@@ -115,7 +117,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         },
       });
 
-      if (reward.user.email) {
+      if (reward.user.email && reward.participation) {
         await enqueueJob({
           type: "SEND_EMAIL",
           priority: "HIGH",

@@ -18,11 +18,15 @@ export async function DELETE() {
       select: {
         id: true,
         deletedAt: true,
-        participations: {
-          where: { status: "PENDING" },
-          select: { id: true },
-        },
       },
+    });
+
+    const pendingParticipations = await prisma.participation.findMany({
+      where: {
+        userId: session.user.id,
+        status: { in: ["SUBMITTED", "PENDING_REVIEW", "MANUAL_REVIEW"] },
+      },
+      select: { id: true },
     });
 
     if (!user) {
@@ -42,7 +46,7 @@ export async function DELETE() {
       );
     }
 
-    if (user.participations.length > 0) {
+    if (pendingParticipations.length > 0) {
       return NextResponse.json(
         {
           success: false,

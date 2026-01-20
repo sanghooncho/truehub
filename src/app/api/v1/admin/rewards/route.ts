@@ -110,11 +110,13 @@ export async function GET(request: NextRequest) {
             email: r.user.email ? maskEmail(r.user.email) : null,
             profileName: r.user.profileName,
           },
-          campaign: {
-            id: r.participation.campaign.id,
-            title: r.participation.campaign.title,
-          },
-          approvedAt: r.participation.reviewedAt,
+          campaign: r.participation
+            ? {
+                id: r.participation.campaign.id,
+                title: r.participation.campaign.title,
+              }
+            : null,
+          approvedAt: r.participation?.reviewedAt ?? null,
           processedBy: r.processedBy
             ? {
                 id: r.processedBy.id,
