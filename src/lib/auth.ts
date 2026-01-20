@@ -54,6 +54,10 @@ const NaverProvider = {
   userinfo: "https://openapi.naver.com/v1/nid/me",
   clientId: process.env.NAVER_CLIENT_ID,
   clientSecret: process.env.NAVER_CLIENT_SECRET,
+  client: {
+    token_endpoint_auth_method: "client_secret_post",
+  },
+  checks: ["state"] as ("state" | "pkce" | "none")[],
   profile(profile: { response: { id: string; email?: string; nickname?: string } }) {
     return {
       id: profile.response.id,
