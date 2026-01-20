@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { signIn } from "next-auth/react";
 
 export default function TesterLoginPage() {
@@ -8,10 +9,15 @@ export default function TesterLoginPage() {
       <main className="flex flex-1 flex-col items-center justify-center px-5">
         <div className="w-full max-w-md">
           <div className="mb-12 text-center">
-            <h1 className="mb-3 text-3xl font-bold text-primary">TrueHub</h1>
-            <p className="text-base text-slate-500">
-              앱을 체험하고 리워드를 받으세요
-            </p>
+            <Image
+              src="/logo.png"
+              alt="TrueHub"
+              width={180}
+              height={120}
+              className="mx-auto mb-3"
+              priority
+            />
+            <p className="text-base text-slate-500">앱을 체험하고 리워드를 받으세요</p>
           </div>
 
           <div className="space-y-3">
@@ -42,7 +48,7 @@ export default function TesterLoginPage() {
         </div>
       </main>
 
-      <footer className="px-5 pb-8 pt-4">
+      <footer className="px-5 pt-4 pb-8">
         <p className="text-center text-xs leading-relaxed text-slate-400">
           시작하기를 누르면{" "}
           <a href="/terms" className="underline underline-offset-2">
@@ -75,10 +81,7 @@ function KakaoIcon() {
 function NaverIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <path
-        d="M13.5 10.548L6.22 3H3v14h3.5V9.452L13.78 17H17V3h-3.5v7.548z"
-        fill="white"
-      />
+      <path d="M13.5 10.548L6.22 3H3v14h3.5V9.452L13.78 17H17V3h-3.5v7.548z" fill="white" />
     </svg>
   );
 }

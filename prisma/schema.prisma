@@ -61,12 +61,19 @@ enum RewardStatus {
   FAILED
 }
 
+enum RewardType {
+  PARTICIPATION
+  SIGNUP_BONUS
+  REFERRAL_BONUS
+}
+
 enum JobType {
   FRAUD_CHECK
   PHASH_CALC
   TEXT_SIMILARITY
   AI_REPORT
   SEND_EMAIL
+  SCREENSHOT_VERIFY
 }
 
 enum JobStatus {
@@ -92,6 +99,7 @@ model User {
   deviceFingerprint String?   @map("device_fingerprint")
   isBanned          Boolean   @default(false) @map("is_banned")
   banReason         String?   @map("ban_reason")
+  deletedAt         DateTime? @map("deleted_at")
   lastLoginAt       DateTime? @map("last_login_at")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
@@ -143,23 +151,27 @@ model Operator {
 }
 
 model Campaign {
-  id               String         @id @default(uuid())
-  advertiserId     String         @map("advertiser_id")
-  title            String
-  description      String
-  appLinkIos       String?        @map("app_link_ios")
-  appLinkAndroid   String?        @map("app_link_android")
-  targetCount      Int            @map("target_count")
-  currentCount     Int            @default(0) @map("current_count")
-  rewardAmount     Int            @map("reward_amount")
-  creditCostPerValid Int          @map("credit_cost_per_valid")
-  status           CampaignStatus @default(DRAFT)
-  startAt          DateTime?      @map("start_at")
-  endAt            DateTime       @map("end_at")
-  closedAt         DateTime?      @map("closed_at")
-  completedAt      DateTime?      @map("completed_at")
-  createdAt        DateTime       @default(now()) @map("created_at")
-  updatedAt        DateTime       @updatedAt @map("updated_at")
+  id                 String         @id @default(uuid())
+  advertiserId       String         @map("advertiser_id")
+  title              String
+  description        String
+  appLinkIos         String?        @map("app_link_ios")
+  appLinkAndroid     String?        @map("app_link_android")
+  targetCount        Int            @map("target_count")
+  currentCount       Int            @default(0) @map("current_count")
+  rewardAmount       Int            @map("reward_amount")
+  creditCostPerValid Int            @map("credit_cost_per_valid")
+  screenshot1Mission String?        @map("screenshot1_mission")
+  screenshot2Mission String?        @map("screenshot2_mission")
+  screenshot1RefKey  String?        @map("screenshot1_ref_key")
+  screenshot2RefKey  String?        @map("screenshot2_ref_key")
+  status             CampaignStatus @default(DRAFT)
+  startAt            DateTime?      @map("start_at")
+  endAt              DateTime       @map("end_at")
+  closedAt           DateTime?      @map("closed_at")
+  completedAt        DateTime?      @map("completed_at")
+  createdAt          DateTime       @default(now()) @map("created_at")
+  updatedAt          DateTime       @updatedAt @map("updated_at")
 
   advertiser       Advertiser     @relation(fields: [advertiserId], references: [id])
   questions        CampaignQuestion[]
@@ -196,6 +208,8 @@ model Participation {
   fraudScore    Int?                @map("fraud_score")
   fraudDecision FraudDecision?      @map("fraud_decision")
   fraudReasons  String[]            @map("fraud_reasons")
+  textQualityValid  Boolean?        @map("text_quality_valid")
+  textQualityReason String?         @map("text_quality_reason")
   reviewerId    String?             @map("reviewer_id")
   reviewedAt    DateTime?           @map("reviewed_at")
   rejectReason  String?             @map("reject_reason")
@@ -228,6 +242,8 @@ model ParticipationAsset {
   phash           String?
   sha256          String?
   ocrText         String?  @map("ocr_text")
+  aiVerified      Boolean? @map("ai_verified")
+  aiVerifyReason  String?  @map("ai_verify_reason")
   createdAt       DateTime @default(now()) @map("created_at")
 
   participation   Participation @relation(fields: [participationId], references: [id], onDelete: Cascade)
@@ -311,8 +327,9 @@ model TopupRequest {
 
 model Reward {
   id              String       @id @default(uuid())
-  participationId String       @unique @map("participation_id")
+  participationId String?      @unique @map("participation_id")
   userId          String       @map("user_id")
+  type            RewardType   @default(PARTICIPATION)
   amount          Int
   status          RewardStatus @default(REQUESTED)
   method          String?
@@ -324,12 +341,13 @@ model Reward {
   createdAt       DateTime     @default(now()) @map("created_at")
   updatedAt       DateTime     @updatedAt @map("updated_at")
 
-  participation   Participation @relation(fields: [participationId], references: [id])
-  user            User          @relation(fields: [userId], references: [id])
-  processedBy     Operator?     @relation("ProcessedBy", fields: [processedById], references: [id])
+  participation   Participation? @relation(fields: [participationId], references: [id])
+  user            User           @relation(fields: [userId], references: [id])
+  processedBy     Operator?      @relation("ProcessedBy", fields: [processedById], references: [id])
 
   @@index([userId])
   @@index([status])
+  @@index([type])
   @@map("rewards")
 }
 

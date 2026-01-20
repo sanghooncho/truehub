@@ -3,6 +3,7 @@ import { z } from "zod";
 import { CampaignStatus, ParticipationStatus, Prisma } from "@prisma/client";
 import { prisma } from "@/infra/db/prisma";
 import { getAdvertiserFromRequest } from "@/lib/advertiser-auth";
+import { calculateCreditCost } from "@/lib/config";
 
 const createCampaignSchema = z.object({
   title: z
@@ -25,8 +26,21 @@ const createCampaignSchema = z.object({
     .int()
     .min(1000, "Reward must be at least 1000 KRW")
     .max(50000, "Reward must be at most 50000 KRW"),
-  creditCostPerValid: z.number().int().min(1000),
   endAt: z.string().datetime({ message: "Invalid date format" }),
+  screenshot1Mission: z
+    .string()
+    .min(5, "Mission must be at least 5 characters")
+    .max(200, "Mission must be at most 200 characters")
+    .optional()
+    .nullable(),
+  screenshot2Mission: z
+    .string()
+    .min(5, "Mission must be at least 5 characters")
+    .max(200, "Mission must be at most 200 characters")
+    .optional()
+    .nullable(),
+  screenshot1RefKey: z.string().optional().nullable(),
+  screenshot2RefKey: z.string().optional().nullable(),
   questions: z
     .array(
       z.object({
@@ -75,18 +89,7 @@ export async function POST(request: NextRequest) {
 
     const data = validation.data;
 
-    if (data.creditCostPerValid < data.rewardAmount) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: "VALIDATION_ERROR",
-            message: "Credit cost per valid must be greater than or equal to reward amount",
-          },
-        },
-        { status: 400 }
-      );
-    }
+    const creditCostPerValid = calculateCreditCost(data.rewardAmount);
 
     const endAtDate = new Date(data.endAt);
     const now = new Date();
@@ -143,7 +146,11 @@ export async function POST(request: NextRequest) {
           appLinkAndroid: data.appLinkAndroid || null,
           targetCount: data.targetCount,
           rewardAmount: data.rewardAmount,
-          creditCostPerValid: data.creditCostPerValid,
+          creditCostPerValid,
+          screenshot1Mission: data.screenshot1Mission || null,
+          screenshot2Mission: data.screenshot2Mission || null,
+          screenshot1RefKey: data.screenshot1RefKey || null,
+          screenshot2RefKey: data.screenshot2RefKey || null,
           endAt: endAtDate,
           status: "DRAFT",
           questions: {

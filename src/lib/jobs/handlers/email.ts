@@ -5,7 +5,7 @@ function getResendClient() {
   return new Resend(process.env.RESEND_API_KEY);
 }
 
-const FROM_EMAIL = "TrueHub <noreply@truehub.co.kr>";
+const FROM_EMAIL = process.env.EMAIL_FROM || "TrueHub <onboarding@resend.dev>";
 
 export interface EmailPayload {
   templateType: "PARTICIPATION_APPROVED" | "PARTICIPATION_REJECTED" | "REWARD_SENT";
@@ -120,10 +120,11 @@ function getTemplate(
 
 export async function sendEmail(payload: EmailPayload): Promise<string> {
   const template = getTemplate(payload.templateType, payload.data);
+  const recipientEmail = process.env.EMAIL_TEST_RECIPIENT || payload.recipientEmail;
 
   const emailLog = await prisma.emailLog.create({
     data: {
-      recipientEmail: payload.recipientEmail,
+      recipientEmail: recipientEmail,
       recipientType: payload.recipientType,
       recipientId: payload.recipientId,
       templateType: payload.templateType,
@@ -135,7 +136,7 @@ export async function sendEmail(payload: EmailPayload): Promise<string> {
   try {
     const { data, error } = await getResendClient().emails.send({
       from: FROM_EMAIL,
-      to: payload.recipientEmail,
+      to: recipientEmail,
       subject: template.subject,
       html: template.html,
     });

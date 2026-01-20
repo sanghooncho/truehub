@@ -99,8 +99,8 @@ export async function POST(request: NextRequest) {
           method === "BANK_TRANSFER"
             ? {
                 bankName: "신한은행",
-                accountNumber: "110-123-456789",
-                accountHolder: "트루허브(주)",
+                accountNumber: "110-397-512270",
+                accountHolder: "조상훈",
                 depositMessage: `${depositCode} 입금`,
               }
             : null,

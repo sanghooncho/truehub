@@ -19,6 +19,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         endAt: true,
         appLinkIos: true,
         appLinkAndroid: true,
+        screenshot1Mission: true,
+        screenshot2Mission: true,
+        screenshot1RefKey: true,
+        screenshot2RefKey: true,
         status: true,
         questions: {
           select: {
@@ -75,6 +79,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       isParticipated = !!existing;
     }
 
+    const image1Required = !!(campaign.screenshot1RefKey || campaign.screenshot1Mission);
+    const image2Required = !!(campaign.screenshot2RefKey || campaign.screenshot2Mission);
+
     return NextResponse.json({
       success: true,
       data: {
@@ -88,6 +95,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         endAt: campaign.endAt.toISOString(),
         appLinkIos: campaign.appLinkIos,
         appLinkAndroid: campaign.appLinkAndroid,
+        screenshot1Mission: campaign.screenshot1Mission,
+        screenshot2Mission: campaign.screenshot2Mission,
+        image1Required,
+        image2Required,
         questions: campaign.questions.map((q: (typeof campaign.questions)[number]) => ({
           order: q.questionOrder,
           text: q.questionText,

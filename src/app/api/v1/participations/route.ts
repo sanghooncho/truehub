@@ -10,8 +10,8 @@ const participationSchema = z.object({
   answer1: z.string().min(1).max(2000),
   answer2: z.string().min(1).max(2000),
   feedback: z.string().min(30).max(5000),
-  image1Key: z.string().min(1),
-  image2Key: z.string().min(1),
+  image1Key: z.string().optional(),
+  image2Key: z.string().optional(),
   deviceFingerprint: z.string().optional(),
 });
 
@@ -43,6 +43,10 @@ export async function POST(request: NextRequest) {
         currentCount: true,
         endAt: true,
         rewardAmount: true,
+        screenshot1Mission: true,
+        screenshot2Mission: true,
+        screenshot1RefKey: true,
+        screenshot2RefKey: true,
       },
     });
 
@@ -111,6 +115,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const image1Required = !!(campaign.screenshot1RefKey || campaign.screenshot1Mission);
+    const image2Required = !!(campaign.screenshot2RefKey || campaign.screenshot2Mission);
+
+    if (image1Required && !data.image1Key) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: { code: "VALIDATION_ERROR", message: "Screenshot 1 is required" },
+        },
+        { status: 400 }
+      );
+    }
+    if (image2Required && !data.image2Key) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: { code: "VALIDATION_ERROR", message: "Screenshot 2 is required" },
+        },
+        { status: 400 }
+      );
+    }
+
+    const assetsToCreate: { slot: number; storageKey: string }[] = [];
+    if (data.image1Key) {
+      assetsToCreate.push({ slot: 1, storageKey: data.image1Key });
+    }
+    if (data.image2Key) {
+      assetsToCreate.push({ slot: 2, storageKey: data.image2Key });
+    }
+
     const participation = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const newParticipation = await tx.participation.create({
         data: {
@@ -120,12 +154,11 @@ export async function POST(request: NextRequest) {
           answer2: data.answer2,
           feedback: data.feedback,
           status: "SUBMITTED",
-          assets: {
-            create: [
-              { slot: 1, storageKey: data.image1Key },
-              { slot: 2, storageKey: data.image2Key },
-            ],
-          },
+          ...(assetsToCreate.length > 0 && {
+            assets: {
+              create: assetsToCreate,
+            },
+          }),
         },
         include: { assets: true },
       });
@@ -145,19 +178,35 @@ export async function POST(request: NextRequest) {
       return newParticipation;
     });
 
-    await enqueueJobBatch([
-      ...participation.assets.map((asset) => ({
-        type: "PHASH_CALC" as const,
-        payload: { assetId: asset.id, storageKey: asset.storageKey },
-        priority: "HIGH" as const,
-      })),
-      {
-        type: "FRAUD_CHECK" as const,
-        payload: { participationId: participation.id },
-        priority: "HIGH" as const,
-        scheduledAt: new Date(Date.now() + 5000),
-      },
-    ]);
+    const hasImages = participation.assets.length > 0;
+
+    const jobs: Parameters<typeof enqueueJobBatch>[0] = [];
+
+    if (hasImages) {
+      for (const asset of participation.assets) {
+        jobs.push({
+          type: "PHASH_CALC" as const,
+          payload: { assetId: asset.id, storageKey: asset.storageKey },
+          priority: "HIGH" as const,
+        });
+      }
+    }
+
+    jobs.push({
+      type: "SCREENSHOT_VERIFY" as const,
+      payload: { participationId: participation.id },
+      priority: "HIGH" as const,
+      scheduledAt: new Date(Date.now() + (hasImages ? 5000 : 1000)),
+    });
+
+    jobs.push({
+      type: "FRAUD_CHECK" as const,
+      payload: { participationId: participation.id },
+      priority: "HIGH" as const,
+      scheduledAt: new Date(Date.now() + (hasImages ? 15000 : 10000)),
+    });
+
+    await enqueueJobBatch(jobs);
 
     return NextResponse.json({
       success: true,

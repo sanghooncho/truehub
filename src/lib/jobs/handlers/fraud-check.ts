@@ -15,13 +15,15 @@ interface FraudSignalInput {
 }
 
 const SIGNAL_WEIGHTS = {
+  BANNED_USER: 100,
   DUPLICATE_IMAGE: 50,
+  AI_VERIFY_FAILED: 40,
+  LOW_QUALITY_TEXT: 35,
+  DUPLICATE_FEEDBACK: 30,
   SIMILAR_IMAGE: 25,
   SAME_DEVICE: 20,
   RAPID_SUBMISSION: 15,
-  BANNED_USER: 100,
   SHORT_FEEDBACK: 10,
-  DUPLICATE_FEEDBACK: 30,
 };
 
 export async function calculateFraudScore(
@@ -51,6 +53,15 @@ export async function calculateFraudScore(
   }
 
   for (const asset of participation.assets) {
+    if (asset.aiVerified === false) {
+      signals.push({
+        signalType: "AI_VERIFY_FAILED",
+        signalValue: asset.id,
+        score: SIGNAL_WEIGHTS.AI_VERIFY_FAILED,
+        details: { slot: asset.slot, reason: asset.aiVerifyReason },
+      });
+    }
+
     if (asset.sha256) {
       const duplicates = await findDuplicateImages(asset.sha256, asset.id);
       if (duplicates.length > 0) {
@@ -64,7 +75,7 @@ export async function calculateFraudScore(
     }
 
     if (asset.phash) {
-      const similar = await findSimilarImages(asset.phash, asset.id, 5);
+      const similar = await findSimilarImages(asset.phash, asset.id, 5, participation.userId);
       if (similar.length > 0) {
         signals.push({
           signalType: "SIMILAR_IMAGE",
@@ -77,6 +88,15 @@ export async function calculateFraudScore(
         });
       }
     }
+  }
+
+  if (participation.textQualityValid === false) {
+    signals.push({
+      signalType: "LOW_QUALITY_TEXT",
+      signalValue: participation.id,
+      score: SIGNAL_WEIGHTS.LOW_QUALITY_TEXT,
+      details: { reason: participation.textQualityReason },
+    });
   }
 
   if (participation.user.deviceFingerprint) {

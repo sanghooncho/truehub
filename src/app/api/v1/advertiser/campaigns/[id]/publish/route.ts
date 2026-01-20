@@ -72,12 +72,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const requiredCredits = campaign.targetCount * campaign.creditCostPerValid;
     if (advertiser.creditBalance < requiredCredits) {
+      const shortage = requiredCredits - advertiser.creditBalance;
       return NextResponse.json(
         {
           success: false,
           error: {
             code: "CRED_INSUFFICIENT",
-            message: `Insufficient credits. Required: ${requiredCredits.toLocaleString()}, Available: ${advertiser.creditBalance.toLocaleString()}`,
+            message: `크레딧이 부족합니다. 필요: ${requiredCredits.toLocaleString()}원, 보유: ${advertiser.creditBalance.toLocaleString()}원 (${shortage.toLocaleString()}원 부족)`,
           },
         },
         { status: 400 }

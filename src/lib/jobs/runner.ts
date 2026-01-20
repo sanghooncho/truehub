@@ -5,17 +5,27 @@ import { calculateSha256, Sha256Payload } from "./handlers/sha256";
 import { calculateFraudScore, FraudCheckPayload } from "./handlers/fraud-check";
 import { generateAiInsight, AiInsightPayload } from "./handlers/ai-insight";
 import { sendEmail, EmailPayload } from "./handlers/email";
+import { verifyScreenshots, ScreenshotVerifyPayload } from "./handlers/screenshot-verify";
 
 type JobHandler = (payload: unknown) => Promise<unknown>;
 
 const handlers: Record<JobType, JobHandler> = {
-  [JobType.PHASH_CALC]: async (payload) => calculatePhash(payload as PhashPayload),
+  [JobType.PHASH_CALC]: async (payload) => {
+    const p = payload as PhashPayload;
+    const [phash, sha256] = await Promise.all([
+      calculatePhash(p),
+      calculateSha256(p as Sha256Payload),
+    ]);
+    return { phash, sha256 };
+  },
   [JobType.FRAUD_CHECK]: async (payload) => calculateFraudScore(payload as FraudCheckPayload),
   [JobType.AI_REPORT]: async (payload) => generateAiInsight(payload as AiInsightPayload),
   [JobType.SEND_EMAIL]: async (payload) => sendEmail(payload as EmailPayload),
   [JobType.TEXT_SIMILARITY]: async () => {
     throw new Error("TEXT_SIMILARITY not implemented");
   },
+  [JobType.SCREENSHOT_VERIFY]: async (payload) =>
+    verifyScreenshots(payload as ScreenshotVerifyPayload),
 };
 
 export async function processJob(job: Job): Promise<void> {

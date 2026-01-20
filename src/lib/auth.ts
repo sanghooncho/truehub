@@ -58,11 +58,14 @@ const NaverProvider = {
     token_endpoint_auth_method: "client_secret_post",
   },
   checks: ["state"] as ("state" | "pkce" | "none")[],
-  profile(profile: { response: { id: string; email?: string; nickname?: string } }) {
+  profile(profile: Record<string, unknown>) {
+    const response = profile.response as
+      | { id?: string; email?: string; nickname?: string }
+      | undefined;
     return {
-      id: profile.response.id,
-      email: profile.response.email,
-      name: profile.response.nickname,
+      id: response?.id || (profile.id as string),
+      email: response?.email || (profile.email as string),
+      name: response?.nickname || (profile.name as string),
     };
   },
 };
@@ -78,8 +81,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ user, account }) {
-      if (!account?.provider || !user.id) return false;
+    async signIn({ user, account, profile }) {
+      if (!account?.provider) return false;
 
       const providerMap: Record<string, AuthProvider> = {
         kakao: "KAKAO",
@@ -90,18 +93,34 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const authProvider = providerMap[account.provider];
       if (!authProvider) return false;
 
+      // 각 provider에서 실제 ID 추출
+      let providerUserId: string;
+      if (account.provider === "naver") {
+        const naverProfile = profile as { response?: { id?: string } };
+        providerUserId = naverProfile?.response?.id || user.id || "";
+      } else if (account.provider === "kakao") {
+        providerUserId = String((profile as { id?: number })?.id || user.id || "");
+      } else if (account.provider === "google") {
+        const googleProfile = profile as { sub?: string };
+        providerUserId = googleProfile?.sub || user.id || "";
+      } else {
+        providerUserId = user.id || "";
+      }
+
+      if (!providerUserId) return false;
+
       try {
         const existingUser = await prisma.user.findUnique({
           where: {
             provider_providerUserId: {
               provider: authProvider,
-              providerUserId: user.id,
+              providerUserId,
             },
           },
         });
 
         if (existingUser) {
-          if (existingUser.isBanned) {
+          if (existingUser.isBanned || existingUser.deletedAt) {
             return false;
           }
           await prisma.user.update({
@@ -109,13 +128,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             data: { lastLoginAt: new Date() },
           });
         } else {
-          await prisma.user.create({
+          const newUser = await prisma.user.create({
             data: {
               provider: authProvider,
-              providerUserId: user.id,
+              providerUserId,
               email: user.email,
               profileName: user.name,
               lastLoginAt: new Date(),
+            },
+          });
+
+          await prisma.reward.create({
+            data: {
+              userId: newUser.id,
+              type: "SIGNUP_BONUS",
+              amount: 1000,
+              status: "SENT",
+              sentAt: new Date(),
             },
           });
         }
@@ -127,7 +156,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
     },
 
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, profile }) {
       if (account && user) {
         const providerMap: Record<string, AuthProvider> = {
           kakao: "KAKAO",
@@ -136,11 +165,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         };
 
         const authProvider = providerMap[account.provider!];
+
+        let providerUserId: string;
+        if (account.provider === "naver") {
+          const naverProfile = profile as { response?: { id?: string } } | undefined;
+          providerUserId = naverProfile?.response?.id || user.id || "";
+        } else if (account.provider === "kakao") {
+          providerUserId = String((profile as { id?: number } | undefined)?.id || user.id || "");
+        } else if (account.provider === "google") {
+          const googleProfile = profile as { sub?: string } | undefined;
+          providerUserId = googleProfile?.sub || user.id || "";
+        } else {
+          providerUserId = user.id || "";
+        }
+
         const dbUser = await prisma.user.findUnique({
           where: {
             provider_providerUserId: {
               provider: authProvider,
-              providerUserId: user.id!,
+              providerUserId,
             },
           },
         });

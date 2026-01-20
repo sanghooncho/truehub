@@ -57,12 +57,16 @@ export function hammingDistance(hash1: string, hash2: string): number {
 export async function findSimilarImages(
   phash: string,
   excludeAssetId: string,
-  threshold: number = 10
+  threshold: number = 10,
+  sameUserId?: string
 ): Promise<{ assetId: string; distance: number }[]> {
   const assets = await prisma.participationAsset.findMany({
     where: {
       phash: { not: null },
       id: { not: excludeAssetId },
+      ...(sameUserId && {
+        participation: { userId: sameUserId },
+      }),
     },
     select: { id: true, phash: true },
   });
