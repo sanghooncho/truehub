@@ -115,6 +115,7 @@ export default function GiftShopPage() {
   const [dialogStep, setDialogStep] = useState<"detail" | "exchange">("detail");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isExchanging, setIsExchanging] = useState(false);
+  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [exchangeResult, setExchangeResult] = useState<{
     success: boolean;
     data?: {
@@ -171,6 +172,43 @@ export default function GiftShopPage() {
 
   const handleSearch = () => {
     setSearchQuery(searchInput);
+  };
+
+  const handleSelectGoods = async (item: GoodsItem) => {
+    setIsLoadingDetail(true);
+    setSelectedGoods(item);
+
+    try {
+      const response = await fetch(`/api/v1/giftshop/goods/${item.goodsCode}`);
+      const json = await response.json();
+
+      if (!json.success) {
+        toast.error(json.error?.message || "상품을 찾을 수 없습니다");
+        setSelectedGoods(null);
+        await fetchGoods(searchQuery, selectedCategory);
+        return;
+      }
+
+      setSelectedGoods({
+        ...item,
+        goodsCode: json.data.goodsCode,
+        goodsName: json.data.goodsName,
+        brandName: json.data.brandName,
+        salePrice: json.data.salePrice,
+        discountPrice: json.data.discountPrice,
+        discountRate: json.data.discountRate,
+        limitDay: json.data.limitDay,
+        goodsImgS: json.data.goodsImgS,
+        goodsImgB: json.data.goodsImgB,
+        goodsTypeDtlNm: json.data.goodsTypeDtlNm,
+        affiliate: json.data.affiliate,
+      });
+    } catch {
+      toast.error("상품 정보를 불러오는데 실패했습니다");
+      setSelectedGoods(null);
+    } finally {
+      setIsLoadingDetail(false);
+    }
   };
 
   const handleExchange = async () => {
@@ -239,6 +277,7 @@ export default function GiftShopPage() {
     setDialogStep("detail");
     setPhoneNumber("");
     setExchangeResult(null);
+    setIsLoadingDetail(false);
   };
 
   if (isLoading) {
@@ -364,7 +403,7 @@ export default function GiftShopPage() {
                     key={item.goodsCode}
                     item={item}
                     availablePoints={summary?.availablePoints ?? 0}
-                    onSelect={() => setSelectedGoods(item)}
+                    onSelect={() => handleSelectGoods(item)}
                   />
                 ))}
               </div>
@@ -416,7 +455,12 @@ export default function GiftShopPage() {
               <DialogTitle>상품 상세</DialogTitle>
             </VisuallyHidden>
           </DialogHeader>
-          {selectedGoods && dialogStep === "detail" && (
+          {selectedGoods && dialogStep === "detail" && isLoadingDetail && (
+            <div className="flex h-64 items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            </div>
+          )}
+          {selectedGoods && dialogStep === "detail" && !isLoadingDetail && (
             <div className="animate-fade-in-up">
               {/* Hero Image Section */}
               <div className="relative aspect-[4/3] w-full overflow-hidden">

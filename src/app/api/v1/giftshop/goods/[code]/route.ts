@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/infra/db/prisma";
 import { getGiftishowClient, getGiftishowErrorMessage } from "@/lib/giftishow";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ code: string }> }) {
@@ -21,13 +22,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const response = await client.getGoodsDetail(code);
 
     if (response.code !== "0000") {
+      await prisma.giftishowGoods.updateMany({
+        where: { goodsCode: code },
+        data: { isActive: false, syncedAt: new Date() },
+      });
+
       return NextResponse.json(
         {
           success: false,
-          error: {
-            code: response.code,
-            message: getGiftishowErrorMessage(response.code),
-          },
+          error: { code: "SOLD_OUT", message: "해당 상품은 품절되었습니다" },
         },
         { status: 400 }
       );
@@ -35,12 +38,32 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     const g = response.result?.goodsDetail;
     if (!g) {
+      await prisma.giftishowGoods.updateMany({
+        where: { goodsCode: code },
+        data: { isActive: false, syncedAt: new Date() },
+      });
+
       return NextResponse.json(
         {
           success: false,
-          error: { code: "NOT_FOUND", message: "상품을 찾을 수 없습니다" },
+          error: { code: "SOLD_OUT", message: "해당 상품은 품절되었습니다" },
         },
         { status: 404 }
+      );
+    }
+
+    if (g.goodsStateCd !== "SALE") {
+      await prisma.giftishowGoods.updateMany({
+        where: { goodsCode: code },
+        data: { goodsStateCd: g.goodsStateCd, isActive: false, syncedAt: new Date() },
+      });
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: { code: "SOLD_OUT", message: "해당 상품은 품절되었습니다" },
+        },
+        { status: 400 }
       );
     }
 

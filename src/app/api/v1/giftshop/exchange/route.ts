@@ -48,6 +48,11 @@ export async function POST(request: NextRequest) {
     const goodsResponse = await client.getGoodsDetail(goodsCode);
 
     if (goodsResponse.code !== "0000" || !goodsResponse.result?.goodsDetail) {
+      await prisma.giftishowGoods.updateMany({
+        where: { goodsCode },
+        data: { isActive: false, syncedAt: new Date() },
+      });
+
       return NextResponse.json(
         {
           success: false,
@@ -60,6 +65,11 @@ export async function POST(request: NextRequest) {
     const goods = goodsResponse.result.goodsDetail;
 
     if (goods.goodsStateCd !== "SALE") {
+      await prisma.giftishowGoods.updateMany({
+        where: { goodsCode },
+        data: { goodsStateCd: goods.goodsStateCd, isActive: false, syncedAt: new Date() },
+      });
+
       return NextResponse.json(
         {
           success: false,
@@ -71,7 +81,6 @@ export async function POST(request: NextRequest) {
 
     const trId = GiftishowClient.generateTrId();
 
-    // 트랜잭션 + FOR UPDATE 잠금으로 Race Condition 방지
     type PointResult = { total: bigint | null }[];
 
     let exchange;
@@ -79,19 +88,19 @@ export async function POST(request: NextRequest) {
 
     try {
       const txResult = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-        // FOR UPDATE로 해당 유저의 포인트 관련 레코드 잠금
+        await tx.$executeRaw`SELECT id FROM rewards WHERE user_id = ${userId} FOR UPDATE`;
+        await tx.$executeRaw`SELECT id FROM gift_exchanges WHERE user_id = ${userId} FOR UPDATE`;
+
         const earnedResult = await tx.$queryRaw<PointResult>`
           SELECT COALESCE(SUM(amount), 0) as total
           FROM rewards
           WHERE user_id = ${userId} AND status = 'SENT'
-          FOR UPDATE
         `;
 
         const usedResult = await tx.$queryRaw<PointResult>`
           SELECT COALESCE(SUM(points_used), 0) as total
           FROM gift_exchanges
           WHERE user_id = ${userId} AND status IN ('COMPLETED', 'PROCESSING', 'PENDING')
-          FOR UPDATE
         `;
 
         const totalEarned = Number(earnedResult[0]?.total || 0);
