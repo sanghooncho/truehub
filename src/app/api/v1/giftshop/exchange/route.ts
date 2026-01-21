@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
         phoneNumber: cleanPhone,
         trId,
         status: "PROCESSING",
-        sendMethod: "I",
+        sendMethod: "N",
       },
     });
 
@@ -132,7 +132,9 @@ export async function POST(request: NextRequest) {
         mmsTitle: "TrueHub",
         mmsMsg: `${goods.goodsName} 상품권이 도착했습니다.`,
         callbackNo: process.env.GIFTISHOW_CALLBACK_NO || "15880000",
-        gubun: "I",
+        gubun: "N",
+        bannerId: process.env.GIFTISHOW_BANNER_ID,
+        templateId: process.env.GIFTISHOW_TEMPLATE_ID,
       });
 
       if (sendResponse.code === "0000" && sendResponse.result?.result) {

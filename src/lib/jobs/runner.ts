@@ -6,6 +6,7 @@ import { calculateFraudScore, FraudCheckPayload } from "./handlers/fraud-check";
 import { generateAiInsight, AiInsightPayload } from "./handlers/ai-insight";
 import { sendEmail, EmailPayload } from "./handlers/email";
 import { verifyScreenshots, ScreenshotVerifyPayload } from "./handlers/screenshot-verify";
+import { syncGiftishowGoods, GiftishowSyncPayload } from "./handlers/giftishow-sync";
 
 type JobHandler = (payload: unknown) => Promise<unknown>;
 
@@ -29,6 +30,7 @@ const handlers: Record<JobType, JobHandler> = {
   [JobType.GIFT_EXCHANGE]: async () => {
     throw new Error("GIFT_EXCHANGE is handled synchronously in API");
   },
+  [JobType.GIFTISHOW_SYNC]: async (payload) => syncGiftishowGoods(payload as GiftishowSyncPayload),
 };
 
 export async function processJob(job: Job): Promise<void> {

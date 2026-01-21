@@ -7,6 +7,7 @@ const querySchema = z.object({
   limit: z.coerce.number().min(1).max(50).default(20),
   sort: z.enum(["latest", "reward", "deadline"]).default("latest"),
   category: z.string().optional(),
+  search: z.string().optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -17,9 +18,10 @@ export async function GET(request: NextRequest) {
       limit: searchParams.get("limit") || 20,
       sort: searchParams.get("sort") || "latest",
       category: searchParams.get("category") || undefined,
+      search: searchParams.get("search") || undefined,
     });
 
-    const { page, limit, sort } = query;
+    const { page, limit, sort, search } = query;
     const skip = (page - 1) * limit;
 
     const orderBy = getOrderBy(sort);
@@ -27,6 +29,12 @@ export async function GET(request: NextRequest) {
     const where = {
       status: "RUNNING" as const,
       endAt: { gt: new Date() },
+      ...(search && {
+        OR: [
+          { title: { contains: search, mode: "insensitive" as const } },
+          { description: { contains: search, mode: "insensitive" as const } },
+        ],
+      }),
     };
 
     const [campaigns, total] = await Promise.all([

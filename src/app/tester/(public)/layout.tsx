@@ -1,8 +1,53 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { User } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { BottomNav } from "@/components/tester/bottom-nav";
+
+export const metadata: Metadata = {
+  title: "리뷰 미션 참여하고 포인트 받기 | 참여형 미션 리워드 플랫폼",
+  description:
+    "앱 리뷰 미션에 참여하고 포인트를 적립하세요. 적립한 포인트는 스타벅스, 편의점 기프티콘으로 즉시 교환! 매일 새로운 미션이 업데이트됩니다.",
+  keywords: [
+    "리뷰 미션",
+    "포인트 적립 사이트",
+    "참여형 미션",
+    "앱 체험 리워드",
+    "포인트 기프티콘 교환",
+    "스타벅스 기프티콘",
+    "편의점 쿠폰",
+    "미션 포인트",
+    "리워드 앱",
+  ],
+  openGraph: {
+    title: "리뷰 미션 참여하고 포인트 받기 | TrueHub",
+    description:
+      "앱 리뷰 미션에 참여하고 포인트를 적립하세요. 스타벅스, 편의점 기프티콘으로 즉시 교환 가능!",
+    type: "website",
+    locale: "ko_KR",
+    siteName: "TrueHub",
+    url: "https://truehub.previewapp.co.kr/tester/campaigns",
+    images: [
+      {
+        url: "https://truehub.previewapp.co.kr/logo.png",
+        width: 800,
+        height: 400,
+        alt: "TrueHub - 리뷰 미션 참여하고 포인트 받기",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "리뷰 미션 참여하고 포인트 받기 | TrueHub",
+    description:
+      "앱 리뷰 미션에 참여하고 포인트를 적립하세요. 스타벅스, 편의점 기프티콘으로 즉시 교환 가능!",
+    images: ["https://truehub.previewapp.co.kr/logo.png"],
+  },
+  alternates: {
+    canonical: "https://truehub.previewapp.co.kr/tester/campaigns",
+  },
+};
 
 export default async function TesterPublicLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();

@@ -58,7 +58,10 @@ export async function GET(request: NextRequest) {
       }),
       prisma.giftExchange.count({ where }),
       prisma.giftExchange.aggregate({
-        where: { userId },
+        where: {
+          userId,
+          status: { notIn: ["FAILED", "CANCELLED"] },
+        },
         _sum: {
           pointsUsed: true,
         },

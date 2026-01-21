@@ -76,6 +76,7 @@ enum JobType {
   SEND_EMAIL
   SCREENSHOT_VERIFY
   GIFT_EXCHANGE
+  GIFTISHOW_SYNC
 }
 
 enum GiftExchangeStatus {
@@ -474,4 +475,40 @@ model GiftExchange {
   @@index([status])
   @@index([trId])
   @@map("gift_exchanges")
+}
+
+model GiftishowGoods {
+  goodsCode       String              @id @map("goods_code")
+  goodsNo         Int                 @map("goods_no")
+  goodsName       String              @map("goods_name")
+  brandCode       String              @map("brand_code")
+  brandName       String              @map("brand_name")
+  brandIconImg    String?             @map("brand_icon_img")
+  content         String?
+  contentAddDesc  String?             @map("content_add_desc")
+  goodsImgS       String?             @map("goods_img_s")
+  goodsImgB       String?             @map("goods_img_b")
+  realPrice       Int                 @map("real_price")
+  salePrice       Int                 @map("sale_price")
+  discountPrice   Int                 @map("discount_price")
+  discountRate    Int                 @default(0) @map("discount_rate")
+  limitDay        Int                 @default(93) @map("limit_day")
+  goodsTypeNm     String?             @map("goods_type_nm")
+  goodsTypeDtlNm  String?             @map("goods_type_dtl_nm")
+  affiliate       String?
+  goodsStateCd    String              @default("SALE") @map("goods_state_cd")
+  category1Seq    Int?                @map("category1_seq")
+  srchKeyword     String?             @map("srch_keyword")
+  endDate         String?             @map("end_date")
+  isActive        Boolean             @default(true) @map("is_active")
+  syncedAt        DateTime            @default(now()) @map("synced_at")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  @@index([brandCode])
+  @@index([brandName])
+  @@index([discountPrice])
+  @@index([isActive])
+  @@index([category1Seq])
+  @@map("giftishow_goods")
 }

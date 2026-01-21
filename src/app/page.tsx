@@ -69,22 +69,22 @@ export default function LandingPage() {
               <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500">
                 <Sparkles className="h-3.5 w-3.5 text-white" />
               </div>
-              <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">AI 기반 피드백 분석 플랫폼</span>
+              <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">AI 기반 앱 테스터 모집 플랫폼</span>
             </div>
 
             {/* Main headline */}
             <h1 className="mb-8 text-5xl leading-[1.15] font-bold tracking-tight text-slate-900 md:text-7xl lg:text-8xl">
-              <span className="block">진짜 유저의 목소리로</span>
+              <span className="block">실제 유저 피드백으로</span>
               <span className="block mt-2 bg-gradient-to-r from-blue-600 via-cyan-500 to-emerald-500 bg-clip-text text-transparent">
-                서비스를 성장시키세요
+                앱 성장을 가속화하세요
               </span>
             </h1>
 
             {/* Subheadline */}
             <p className="mx-auto mb-12 max-w-2xl text-lg md:text-xl leading-relaxed text-slate-600">
-              TrueHub는 실제 사용자의 생생한 경험 데이터를 수집하고
+              TrueHub에서 검증된 테스터를 모집하고 진짜 사용자 피드백을 받으세요.
               <br className="hidden md:block" />
-              AI가 분석한 핵심 인사이트를 제공합니다.
+              AI가 분석한 인사이트 리포트로 제품 개선점을 즉시 파악할 수 있습니다.
             </p>
 
             {/* CTA Buttons */}
@@ -94,7 +94,7 @@ export default function LandingPage() {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => (window.location.href = "/advertiser/register")}
               >
-                <span>무료로 시작하고 10,000P 받기</span>
+                <span>무료로 테스터 모집 시작하기</span>
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </MotionButton>
               <MotionButton
@@ -103,7 +103,7 @@ export default function LandingPage() {
                 onClick={() => (window.location.href = "/tester/campaigns")}
               >
                 <Gift className="mr-2 h-5 w-5 text-emerald-500" />
-                <span>앱 체험하고 리워드 받기</span>
+                <span>테스터로 참여하기</span>
               </MotionButton>
             </div>
 
@@ -157,8 +157,8 @@ export default function LandingPage() {
                 />
                 <FeatureItem
                   icon={<Gift className="h-6 w-6" />}
-                  label="즉시 리워드 지급"
-                  description="자동 정산"
+                  label="포인트 → 기프티콘"
+                  description="스타벅스/편의점"
                   color="emerald"
                 />
               </div>
@@ -315,8 +315,8 @@ export default function LandingPage() {
                     />
                     <ProcessStep
                       number={3}
-                      title="리워드 획득"
-                      desc="참여 즉시 포인트가 적립됩니다."
+                      title="포인트 적립 & 기프티콘 교환"
+                      desc="참여 즉시 포인트 적립, 스타벅스/편의점 기프티콘으로 교환!"
                       color="emerald"
                     />
                   </div>
@@ -425,8 +425,8 @@ export default function LandingPage() {
             <div className="col-span-1 md:col-span-2">
               <Image src="/logo.png" alt="TrueHub" width={140} height={40} className="h-8 w-auto brightness-0 invert mb-6" />
               <p className="max-w-sm text-slate-500 leading-relaxed">
-                TrueHub는 투명하고 신뢰할 수 있는 모바일 앱 테스팅 플랫폼입니다.
-                실제 유저의 피드백으로 더 나은 서비스를 만들어보세요.
+                TrueHub는 앱 테스터 모집부터 AI 기반 피드백 분석까지,
+                제품 성장에 필요한 모든 것을 제공하는 테스터 모집 플랫폼입니다.
               </p>
             </div>
             <div>

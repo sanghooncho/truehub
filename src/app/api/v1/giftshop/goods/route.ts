@@ -1,80 +1,96 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import {
-  getGiftishowClient,
-  getGiftishowErrorMessage,
-  isGiftishowMockMode,
-  MOCK_GOODS_LIST,
-  GoodsItem,
-} from "@/lib/giftishow";
+import { prisma } from "@/infra/db/prisma";
+import { Prisma } from "@prisma/client";
+
+type SortOption = "price_asc" | "price_desc" | "name_asc" | "discount_desc";
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: { code: "AUTH_INVALID_TOKEN", message: "Authentication required" },
-        },
-        { status: 401 }
-      );
-    }
-
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1", 10);
-    const size = parseInt(searchParams.get("size") || "20", 10);
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
+    const size = Math.min(100, Math.max(1, parseInt(searchParams.get("size") || "20", 10)));
     const brand = searchParams.get("brand") || "";
     const search = searchParams.get("search") || "";
+    const minPrice = searchParams.get("minPrice");
     const maxPrice = searchParams.get("maxPrice");
+    const sort = (searchParams.get("sort") || "price_asc") as SortOption;
+    const category = searchParams.get("category");
 
-    let goods: GoodsItem[];
-    let total: number;
-
-    if (isGiftishowMockMode()) {
-      goods = [...MOCK_GOODS_LIST];
-      total = goods.length;
-    } else {
-      const client = getGiftishowClient();
-      const response = await client.getGoodsList(page, size);
-
-      if (response.code !== "0000") {
-        return NextResponse.json(
-          {
-            success: false,
-            error: {
-              code: response.code,
-              message: getGiftishowErrorMessage(response.code),
-            },
-          },
-          { status: 400 }
-        );
-      }
-
-      goods = response.result?.goodsList || [];
-      total = response.result?.listNum || 0;
-    }
+    const where: Prisma.GiftishowGoodsWhereInput = {
+      isActive: true,
+      goodsStateCd: "SALE",
+    };
 
     if (brand) {
-      goods = goods.filter((g) => g.brandCode === brand);
+      where.OR = [{ brandCode: brand }, { brandName: { contains: brand, mode: "insensitive" } }];
     }
 
     if (search) {
-      const searchLower = search.toLowerCase();
-      goods = goods.filter(
-        (g) =>
-          g.goodsName.toLowerCase().includes(searchLower) ||
-          g.brandName.toLowerCase().includes(searchLower) ||
-          g.srchKeyword?.toLowerCase().includes(searchLower)
-      );
+      where.AND = [
+        {
+          OR: [
+            { goodsName: { contains: search, mode: "insensitive" } },
+            { brandName: { contains: search, mode: "insensitive" } },
+            { srchKeyword: { contains: search, mode: "insensitive" } },
+          ],
+        },
+      ];
     }
 
-    if (maxPrice) {
-      const max = parseInt(maxPrice, 10);
-      goods = goods.filter((g) => g.discountPrice <= max);
+    if (minPrice || maxPrice) {
+      where.discountPrice = {};
+      if (minPrice) {
+        where.discountPrice.gte = parseInt(minPrice, 10);
+      }
+      if (maxPrice) {
+        where.discountPrice.lte = parseInt(maxPrice, 10);
+      }
     }
 
-    goods = goods.filter((g) => g.goodsStateCd === "SALE");
+    if (category) {
+      where.category1Seq = parseInt(category, 10);
+    }
+
+    const orderBy: Prisma.GiftishowGoodsOrderByWithRelationInput = (() => {
+      switch (sort) {
+        case "price_asc":
+          return { discountPrice: "asc" as const };
+        case "price_desc":
+          return { discountPrice: "desc" as const };
+        case "name_asc":
+          return { goodsName: "asc" as const };
+        case "discount_desc":
+          return { discountRate: "desc" as const };
+        default:
+          return { discountPrice: "asc" as const };
+      }
+    })();
+
+    const [goods, total] = await Promise.all([
+      prisma.giftishowGoods.findMany({
+        where,
+        orderBy,
+        skip: (page - 1) * size,
+        take: size,
+        select: {
+          goodsCode: true,
+          goodsName: true,
+          brandCode: true,
+          brandName: true,
+          brandIconImg: true,
+          goodsImgS: true,
+          goodsImgB: true,
+          salePrice: true,
+          discountPrice: true,
+          discountRate: true,
+          limitDay: true,
+          goodsTypeDtlNm: true,
+          affiliate: true,
+          category1Seq: true,
+        },
+      }),
+      prisma.giftishowGoods.count({ where }),
+    ]);
 
     const formattedGoods = goods.map((g) => ({
       goodsCode: g.goodsCode,
@@ -82,14 +98,15 @@ export async function GET(request: NextRequest) {
       brandCode: g.brandCode,
       brandName: g.brandName,
       brandIconImg: g.brandIconImg,
-      goodsImgS: g.goodsImgS,
-      goodsImgB: g.goodsImgB,
+      goodsImgS: g.goodsImgS || g.goodsImgB,
+      goodsImgB: g.goodsImgB || g.goodsImgS,
       salePrice: g.salePrice,
       discountPrice: g.discountPrice,
       discountRate: g.discountRate,
       limitDay: g.limitDay,
       goodsTypeDtlNm: g.goodsTypeDtlNm,
       affiliate: g.affiliate,
+      category: g.category1Seq,
     }));
 
     return NextResponse.json({
@@ -99,6 +116,7 @@ export async function GET(request: NextRequest) {
         total,
         page,
         size,
+        totalPages: Math.ceil(total / size),
       },
     });
   } catch (error) {

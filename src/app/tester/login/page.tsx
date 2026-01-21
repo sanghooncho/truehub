@@ -66,11 +66,17 @@ export default function TesterLoginPage() {
       <footer className="relative px-5 pt-4 pb-8">
         <p className="text-center text-xs leading-relaxed text-slate-400">
           시작하기를 누르면{" "}
-          <a href="/terms" className="text-blue-500 underline underline-offset-2 hover:text-blue-600">
+          <a
+            href="/policy/terms"
+            className="text-blue-500 underline underline-offset-2 hover:text-blue-600"
+          >
             이용약관
           </a>{" "}
           및{" "}
-          <a href="/privacy" className="text-blue-500 underline underline-offset-2 hover:text-blue-600">
+          <a
+            href="/policy/privacy"
+            className="text-blue-500 underline underline-offset-2 hover:text-blue-600"
+          >
             개인정보처리방침
           </a>
           에 동의하는 것으로 간주됩니다.
