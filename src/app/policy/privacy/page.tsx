@@ -151,7 +151,11 @@ export default function PrivacyPolicyPage() {
                 <td className="p-2">AI 인사이트 리포트 생성</td>
               </tr>
               <tr className="border-b">
-                <td className="p-2">NHN KCP</td>
+                <td className="p-2">주식회사 케이티알파</td>
+                <td className="p-2">기프티쇼 발송 및 고객센터에서의 조회, 재전송 관련 업무</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-2">KG이니시스</td>
                 <td className="p-2">결제 처리</td>
               </tr>
             </tbody>
