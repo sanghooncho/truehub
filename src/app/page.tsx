@@ -84,14 +84,14 @@ export default function LandingPage() {
           </PageTransition>
         </section>
 
-        {/* Stats Section (Trust) */}
+        {/* Features Section */}
         <section className="border-y border-slate-100 bg-slate-50 py-12">
           <div className="mx-auto max-w-6xl px-5">
             <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-              <StatItem label="누적 피드백" value="50,000+" />
-              <StatItem label="파트너사" value="120+" />
-              <StatItem label="평균 응답 시간" value="24시간" />
-              <StatItem label="AI 분석 정확도" value="98%" />
+              <FeatureItem icon={<Sparkles className="h-5 w-5" />} label="AI 기반 분석" />
+              <FeatureItem icon={<Shield className="h-5 w-5" />} label="어뷰징 자동 탐지" />
+              <FeatureItem icon={<MessageSquare className="h-5 w-5" />} label="실시간 피드백" />
+              <FeatureItem icon={<Gift className="h-5 w-5" />} label="즉시 리워드 지급" />
             </div>
           </div>
         </section>
@@ -305,11 +305,11 @@ export default function LandingPage() {
   );
 }
 
-function StatItem({ label, value }: { label: string; value: string }) {
+function FeatureItem({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <div className="text-center">
-      <div className="mb-1 text-3xl font-bold text-slate-900 tabular-nums">{value}</div>
-      <div className="text-sm font-medium text-slate-500">{label}</div>
+    <div className="flex flex-col items-center gap-2 text-center">
+      <div className="text-primary">{icon}</div>
+      <div className="text-sm font-semibold text-slate-700">{label}</div>
     </div>
   );
 }
