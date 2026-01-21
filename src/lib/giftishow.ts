@@ -214,6 +214,9 @@ export class GiftishowClient {
     const devYn = this.devMode ? "Y" : "N";
 
     const params = new URLSearchParams({
+      api_code: apiCode,
+      custom_auth_code: this.authCode,
+      custom_auth_token: this.authToken,
       dev_yn: devYn,
       ...additionalParams,
     });

@@ -38,6 +38,10 @@ export default function TopupPage() {
   const handleCardPayment = async (numAmount: number) => {
     const paymentId = `topup_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
+    // 모바일 리다이렉트를 위해 결제 정보 저장
+    localStorage.setItem("pendingPaymentAmount", numAmount.toString());
+    localStorage.setItem("pendingPaymentId", paymentId);
+
     try {
       const response = await PortOne.requestPayment({
         storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID!,
@@ -52,10 +56,18 @@ export default function TopupPage() {
           email: "advertiser@truehub.kr",
           phoneNumber: "01000000000",
         },
+        // 모바일 결제를 위한 리다이렉트 URL
+        redirectUrl: `${window.location.origin}/advertiser/credits/topup/callback`,
       });
 
+      // 모바일에서는 리다이렉트되므로 여기까지 오지 않음
+      // PC에서만 아래 코드 실행
+
       if (response?.code) {
-        // 결제 실패 또는 취소
+        // 결제 실패 또는 취소 - localStorage 정리
+        localStorage.removeItem("pendingPaymentAmount");
+        localStorage.removeItem("pendingPaymentId");
+
         if (response.code === "FAILURE_TYPE_PG") {
           toast.error(response.message || "결제에 실패했습니다");
         } else {
@@ -81,10 +93,16 @@ export default function TopupPage() {
         return;
       }
 
+      // 성공 - localStorage 정리
+      localStorage.removeItem("pendingPaymentAmount");
+      localStorage.removeItem("pendingPaymentId");
+
       toast.success("크레딧이 충전되었습니다!");
       router.push("/advertiser/credits");
     } catch (error) {
       console.error("Payment error:", error);
+      localStorage.removeItem("pendingPaymentAmount");
+      localStorage.removeItem("pendingPaymentId");
       toast.error("결제 중 오류가 발생했습니다");
     }
   };
