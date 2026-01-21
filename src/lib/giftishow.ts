@@ -267,9 +267,7 @@ export class GiftishowClient {
    * @param goodsCode 상품 코드
    */
   async getGoodsDetail(goodsCode: string): Promise<GiftishowApiResponse<GoodsDetailResult>> {
-    return this.request<GoodsDetailResult>("/goods", API_CODES.GOODS_DETAIL, {
-      goods_code: goodsCode,
-    });
+    return this.request<GoodsDetailResult>(`/goods/${goodsCode}`, API_CODES.GOODS_DETAIL, {});
   }
 
   /**
