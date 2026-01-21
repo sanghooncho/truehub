@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { PageTransition, FadeInUp, MotionButton } from "@/components/ui/motion";
 import {
@@ -22,8 +23,8 @@ export default function LandingPage() {
       {/* Header */}
       <header className="fixed top-0 z-50 w-full border-b border-slate-100 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
-          <Link href="/" className="text-primary text-xl font-bold tracking-tight">
-            TrueHub
+          <Link href="/" className="flex items-center">
+            <Image src="/logo.png" alt="TrueHub" width={140} height={40} className="h-8 w-auto" />
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
             <Link
@@ -241,7 +242,7 @@ export default function LandingPage() {
       <footer className="bg-slate-50 py-12 text-slate-500">
         <div className="mx-auto grid max-w-6xl gap-8 px-5 md:grid-cols-4">
           <div className="col-span-1 md:col-span-2">
-            <span className="text-lg font-bold text-slate-900">TrueHub</span>
+            <Image src="/logo.png" alt="TrueHub" width={120} height={35} className="h-7 w-auto" />
             <p className="mt-4 max-w-xs text-sm">
               TrueHub는 투명하고 신뢰할 수 있는 모바일 앱 테스팅 플랫폼입니다.
             </p>
