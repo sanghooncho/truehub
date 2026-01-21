@@ -211,13 +211,7 @@ export class GiftishowClient {
   ): Promise<GiftishowApiResponse<T>> {
     const url = `${GIFTISHOW_BASE_URL}${endpoint}`;
 
-    const params = new URLSearchParams({
-      api_code: apiCode,
-      custom_auth_code: this.authCode,
-      custom_auth_token: this.authToken,
-      dev_yn: this.devMode ? "Y" : "N",
-      ...additionalParams,
-    });
+    const params = new URLSearchParams(additionalParams);
 
     try {
       const response = await fetch(url, {
@@ -225,6 +219,10 @@ export class GiftishowClient {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           Accept: "application/json",
+          api_code: apiCode,
+          custom_auth_code: this.authCode,
+          custom_auth_token: this.authToken,
+          dev_flag: this.devMode ? "Y" : "N",
         },
         body: params.toString(),
       });
