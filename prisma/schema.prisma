@@ -52,7 +52,7 @@ enum TopupStatus {
 
 enum TopupMethod {
   BANK_TRANSFER
-  STRIPE
+  CARD
 }
 
 enum RewardStatus {
@@ -74,6 +74,15 @@ enum JobType {
   AI_REPORT
   SEND_EMAIL
   SCREENSHOT_VERIFY
+  GIFT_EXCHANGE
+}
+
+enum GiftExchangeStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
 }
 
 enum JobStatus {
@@ -106,6 +115,7 @@ model User {
 
   participations    Participation[]
   rewards           Reward[]
+  giftExchanges     GiftExchange[]
 
   @@unique([provider, providerUserId])
   @@map("users")
@@ -430,4 +440,37 @@ model EmailLog {
   @@index([recipientId])
   @@index([templateType])
   @@map("email_logs")
+}
+
+model GiftExchange {
+  id              String              @id @default(uuid())
+  userId          String              @map("user_id")
+  goodsCode       String              @map("goods_code")
+  goodsName       String              @map("goods_name")
+  brandName       String              @map("brand_name")
+  goodsImageUrl   String?             @map("goods_image_url")
+  amount          Int
+  discountPrice   Int                 @map("discount_price")
+  pointsUsed      Int                 @map("points_used")
+  phoneNumber     String              @map("phone_number")
+  trId            String              @unique @map("tr_id")
+  orderNo         String?             @map("order_no")
+  pinNo           String?             @map("pin_no")
+  couponImageUrl  String?             @map("coupon_image_url")
+  status          GiftExchangeStatus  @default(PENDING)
+  sendMethod      String              @default("N") @map("send_method")
+  giftishowCode   String?             @map("giftishow_code")
+  giftishowMsg    String?             @map("giftishow_msg")
+  validUntil      DateTime?           @map("valid_until")
+  failReason      String?             @map("fail_reason")
+  processedAt     DateTime?           @map("processed_at")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  user            User                @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([trId])
+  @@map("gift_exchanges")
 }

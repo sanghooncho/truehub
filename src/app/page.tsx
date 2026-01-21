@@ -265,25 +265,39 @@ export default function LandingPage() {
             <h4 className="mb-4 font-semibold text-slate-900">Support</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/terms" className="hover:text-slate-900">
+                <Link href="/policy/terms" className="hover:text-slate-900">
                   이용약관
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-slate-900">
+                <Link href="/policy/privacy" className="hover:text-slate-900">
                   개인정보처리방침
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-slate-900">
-                  문의하기
+                <Link href="/policy/refund" className="hover:text-slate-900">
+                  환불정책
                 </Link>
               </li>
             </ul>
           </div>
         </div>
-        <div className="mx-auto mt-12 max-w-6xl border-t border-slate-200 px-5 pt-8 text-center text-xs">
-          &copy; 2026 TrueHub. All rights reserved.
+        <div className="mx-auto mt-12 max-w-6xl border-t border-slate-200 px-5 pt-8">
+          <div className="text-center text-xs leading-relaxed text-slate-400">
+            <p className="mb-1">
+              <span className="font-medium">프리뷰</span> | 대표: 조상훈 | 사업자등록번호: 659-44-01557
+            </p>
+            <p className="mb-1">
+              통신판매업 신고번호: 제2025-서울광진-1698호
+            </p>
+            <p className="mb-1">
+              주소: 서울특별시 광진구 군자로12길 46, 102동 501호(군자동, 일성파크아파트)
+            </p>
+            <p className="mb-3">
+              이메일: previewapp@naver.com
+            </p>
+            <p>&copy; {new Date().getFullYear()} 프리뷰. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>

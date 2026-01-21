@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -15,7 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { LogOut, User, ChevronRight, Mail, UserCircle, Link2, Trash2, Loader2 } from "lucide-react";
+import { LogOut, User, ChevronRight, Mail, UserCircle, Link2, Trash2, Loader2, FileText, Shield } from "lucide-react";
 import { toast } from "sonner";
 
 interface UserInfo {
@@ -31,6 +32,7 @@ const PROVIDER_LABEL: Record<string, string> = {
 };
 
 export default function TesterSettingsPage() {
+  const router = useRouter();
   const [showUserInfo, setShowUserInfo] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -81,8 +83,16 @@ export default function TesterSettingsPage() {
           label="내 정보"
           onClick={() => setShowUserInfo(true)}
         />
-        <SettingsItem icon={<User className="h-5 w-5" />} label="이용약관" />
-        <SettingsItem icon={<User className="h-5 w-5" />} label="개인정보처리방침" />
+        <SettingsItem
+          icon={<FileText className="h-5 w-5" />}
+          label="이용약관"
+          onClick={() => router.push("/tester/settings/terms")}
+        />
+        <SettingsItem
+          icon={<Shield className="h-5 w-5" />}
+          label="개인정보처리방침"
+          onClick={() => router.push("/tester/settings/privacy")}
+        />
       </Card>
       <div className="mt-6 space-y-3">
         <Button

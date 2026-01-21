@@ -13,7 +13,7 @@ export default function HomePage() {
             <span className="text-primary">리워드</span>를 받으세요
           </h1>
           <p className="mx-auto mb-8 max-w-2xl text-lg text-slate-600">
-            TrueHub에서 다양한 앱을 체험하고 솔직한 피드백을 남기면 리워드를 드립니다. 광고주는
+            프리뷰에서 다양한 앱을 체험하고 솔직한 피드백을 남기면 리워드를 드립니다. 광고주는
             실제 사용자의 목소리로 서비스를 개선할 수 있습니다.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">

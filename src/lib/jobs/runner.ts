@@ -26,6 +26,9 @@ const handlers: Record<JobType, JobHandler> = {
   },
   [JobType.SCREENSHOT_VERIFY]: async (payload) =>
     verifyScreenshots(payload as ScreenshotVerifyPayload),
+  [JobType.GIFT_EXCHANGE]: async () => {
+    throw new Error("GIFT_EXCHANGE is handled synchronously in API");
+  },
 };
 
 export async function processJob(job: Job): Promise<void> {

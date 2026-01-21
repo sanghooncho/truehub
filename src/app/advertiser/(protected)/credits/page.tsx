@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, TrendingDown, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface DashboardData {
   creditBalance: number;
@@ -22,26 +22,84 @@ interface Topup {
   createdAt: string;
 }
 
+interface Transaction {
+  id: string;
+  amount: number;
+  balanceAfter: number;
+  createdAt: string;
+  campaign: { id: string; title: string } | null;
+  tester: { id: string; name: string } | null;
+}
+
+interface CampaignStat {
+  id: string;
+  title: string;
+  count: number;
+  total: number;
+}
+
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+interface TransactionsData {
+  items: Transaction[];
+  pagination: Pagination;
+  summary: {
+    totalConsumed: number;
+    byCampaign: CampaignStat[];
+  };
+}
+
 export default function AdvertiserCreditsPage() {
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [topups, setTopups] = useState<Topup[]>([]);
+  const [transactions, setTransactions] = useState<TransactionsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [txPage, setTxPage] = useState(1);
+  const [txLoading, setTxLoading] = useState(false);
+
+  const fetchTransactions = useCallback(async (page: number) => {
+    setTxLoading(true);
+    try {
+      const res = await fetch(`/api/v1/advertiser/transactions?page=${page}&limit=20`);
+      const data = await res.json();
+      if (data.success) {
+        setTransactions(data.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch transactions:", error);
+    } finally {
+      setTxLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [dashRes, topupsRes] = await Promise.all([
+        const [dashRes, topupsRes, txRes] = await Promise.all([
           fetch("/api/v1/advertiser/dashboard"),
           fetch("/api/v1/advertiser/topups"),
+          fetch("/api/v1/advertiser/transactions?page=1&limit=20"),
         ]);
 
-        const [dashData, topupsData] = await Promise.all([dashRes.json(), topupsRes.json()]);
+        const [dashData, topupsData, txData] = await Promise.all([
+          dashRes.json(),
+          topupsRes.json(),
+          txRes.json(),
+        ]);
 
         if (dashData.success) {
           setDashboard({ creditBalance: dashData.data.creditBalance });
         }
         if (topupsData.success) {
           setTopups(topupsData.data.items);
+        }
+        if (txData.success) {
+          setTransactions(txData.data);
         }
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -51,6 +109,11 @@ export default function AdvertiserCreditsPage() {
     };
     fetchData();
   }, []);
+
+  const handlePageChange = (newPage: number) => {
+    setTxPage(newPage);
+    fetchTransactions(newPage);
+  };
 
   if (isLoading) {
     return (
@@ -80,6 +143,102 @@ export default function AdvertiserCreditsPage() {
           <span className="ml-2 text-xl">원</span>
         </p>
       </Card>
+
+      {transactions && transactions.summary.byCampaign.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingDown className="h-5 w-5 text-rose-500" />
+              캠페인별 사용 현황
+            </CardTitle>
+            <CardDescription>
+              총 사용: {transactions.summary.totalConsumed.toLocaleString()}원
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {transactions.summary.byCampaign.map((campaign) => (
+                <div
+                  key={campaign.id}
+                  className="flex items-center justify-between rounded-lg border border-slate-100 p-4"
+                >
+                  <div>
+                    <p className="font-medium text-slate-900">{campaign.title}</p>
+                    <p className="text-sm text-slate-500">{campaign.count}건 승인</p>
+                  </div>
+                  <span className="font-semibold text-rose-600">
+                    -{campaign.total.toLocaleString()}원
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {transactions && transactions.pagination.total > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>사용 내역</CardTitle>
+            <CardDescription>총 {transactions.pagination.total}건의 사용 내역</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {txLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {transactions.items.map((tx) => (
+                  <div
+                    key={tx.id}
+                    className="flex items-center justify-between rounded-lg border border-slate-100 p-4"
+                  >
+                    <div className="space-y-1">
+                      <p className="font-medium text-slate-900">
+                        {tx.campaign?.title || "캠페인 정보 없음"}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        테스터: {tx.tester?.name || "알 수 없음"}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-rose-600">-{tx.amount.toLocaleString()}원</p>
+                      <p className="text-xs text-slate-400">
+                        {new Date(tx.createdAt).toLocaleDateString("ko-KR")}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {transactions.pagination.totalPages > 1 && (
+              <div className="mt-6 flex items-center justify-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(txPage - 1)}
+                  disabled={txPage <= 1 || txLoading}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="px-3 text-sm text-slate-600">
+                  {txPage} / {transactions.pagination.totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(txPage + 1)}
+                  disabled={txPage >= transactions.pagination.totalPages || txLoading}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

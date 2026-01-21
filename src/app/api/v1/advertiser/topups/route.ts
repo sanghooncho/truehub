@@ -5,7 +5,7 @@ import { getAdvertiserFromRequest } from "@/lib/advertiser-auth";
 
 const createTopupSchema = z.object({
   amount: z.number().int().min(10000, "Minimum 10,000 KRW").max(10000000, "Maximum 10,000,000 KRW"),
-  method: z.enum(["BANK_TRANSFER", "STRIPE"]),
+  method: z.enum(["BANK_TRANSFER", "CARD"]),
 });
 
 function generateDepositCode(): string {

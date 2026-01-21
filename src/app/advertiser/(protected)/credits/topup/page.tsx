@@ -4,12 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import * as PortOne from "@portone/browser-sdk/v2";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ChevronLeft, Loader2, Copy, Check } from "lucide-react";
+import { ChevronLeft, Loader2, Copy, Check, CreditCard } from "lucide-react";
 
 interface TopupResult {
   id: string;
@@ -29,10 +30,64 @@ const PRESET_AMOUNTS = [50000, 100000, 300000, 500000, 1000000];
 export default function TopupPage() {
   const router = useRouter();
   const [amount, setAmount] = useState("");
-  const [method, setMethod] = useState<"BANK_TRANSFER" | "STRIPE">("BANK_TRANSFER");
+  const [method, setMethod] = useState<"BANK_TRANSFER" | "CARD">("CARD");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<TopupResult | null>(null);
   const [copied, setCopied] = useState(false);
+
+  const handleCardPayment = async (numAmount: number) => {
+    const paymentId = `topup_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+    try {
+      const response = await PortOne.requestPayment({
+        storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID!,
+        channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!,
+        paymentId,
+        orderName: `TrueHub 크레딧 ${numAmount.toLocaleString()}원 충전`,
+        totalAmount: numAmount,
+        currency: "CURRENCY_KRW",
+        payMethod: "CARD",
+        customer: {
+          fullName: "TrueHub 광고주",
+          email: "advertiser@truehub.kr",
+          phoneNumber: "01000000000",
+        },
+      });
+
+      if (response?.code) {
+        // 결제 실패 또는 취소
+        if (response.code === "FAILURE_TYPE_PG") {
+          toast.error(response.message || "결제에 실패했습니다");
+        } else {
+          toast.error("결제가 취소되었습니다");
+        }
+        return;
+      }
+
+      // 결제 성공 - 서버에 검증 요청
+      const verifyRes = await fetch("/api/v1/advertiser/topups/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paymentId,
+          amount: numAmount,
+        }),
+      });
+
+      const verifyData = await verifyRes.json();
+
+      if (!verifyRes.ok) {
+        toast.error(verifyData.error?.message || "결제 확인에 실패했습니다");
+        return;
+      }
+
+      toast.success("크레딧이 충전되었습니다!");
+      router.push("/advertiser/credits");
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast.error("결제 중 오류가 발생했습니다");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,22 +104,28 @@ export default function TopupPage() {
     }
 
     setIsLoading(true);
+
     try {
-      const res = await fetch("/api/v1/advertiser/topups", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: numAmount, method }),
-      });
+      if (method === "CARD") {
+        await handleCardPayment(numAmount);
+      } else {
+        // 무통장 입금
+        const res = await fetch("/api/v1/advertiser/topups", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: numAmount, method }),
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (!res.ok) {
-        toast.error(data.error?.message || "충전 요청에 실패했습니다");
-        return;
+        if (!res.ok) {
+          toast.error(data.error?.message || "충전 요청에 실패했습니다");
+          return;
+        }
+
+        setResult(data.data);
+        toast.success("충전 요청이 생성되었습니다");
       }
-
-      setResult(data.data);
-      toast.success("충전 요청이 생성되었습니다");
     } catch {
       toast.error("오류가 발생했습니다");
     } finally {
@@ -218,20 +279,23 @@ export default function TopupPage() {
               <Label>결제 방법</Label>
               <RadioGroup
                 value={method}
-                onValueChange={(v) => setMethod(v as "BANK_TRANSFER" | "STRIPE")}
+                onValueChange={(v) => setMethod(v as "BANK_TRANSFER" | "CARD")}
               >
+                <div className="flex items-center space-x-2 rounded-lg border p-4">
+                  <RadioGroupItem value="CARD" id="card" />
+                  <Label htmlFor="card" className="flex-1 cursor-pointer">
+                    <span className="flex items-center gap-2 font-medium">
+                      <CreditCard className="h-4 w-4" />
+                      카드 결제
+                    </span>
+                    <span className="block text-sm text-slate-500">신용카드/체크카드로 즉시 결제</span>
+                  </Label>
+                </div>
                 <div className="flex items-center space-x-2 rounded-lg border p-4">
                   <RadioGroupItem value="BANK_TRANSFER" id="bank" />
                   <Label htmlFor="bank" className="flex-1 cursor-pointer">
                     <span className="font-medium">무통장 입금</span>
-                    <span className="block text-sm text-slate-500">신한은행 계좌로 직접 입금</span>
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2 rounded-lg border p-4 opacity-50">
-                  <RadioGroupItem value="STRIPE" id="stripe" disabled />
-                  <Label htmlFor="stripe" className="flex-1">
-                    <span className="font-medium">카드 결제</span>
-                    <span className="block text-sm text-slate-500">준비 중</span>
+                    <span className="block text-sm text-slate-500">계좌로 직접 입금 (입금 확인 후 충전)</span>
                   </Label>
                 </div>
               </RadioGroup>

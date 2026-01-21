@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { toast } from "sonner";
 import {
   Loader2,
   ChevronLeft,
+  ChevronRight,
   Calendar,
   Users,
   CreditCard,
@@ -16,6 +18,7 @@ import {
   XCircle,
   FileText,
   BarChart3,
+  MessageSquare,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -33,6 +36,30 @@ interface CampaignStats {
 interface Question {
   order: number;
   text: string;
+}
+
+interface Screenshot {
+  id: string;
+  slot: number;
+  url: string;
+}
+
+interface Review {
+  id: string;
+  tester: { id: string; name: string };
+  answer1: string;
+  answer2: string;
+  feedback: string;
+  approvedAt: string | null;
+  submittedAt: string;
+  screenshots: Screenshot[];
+}
+
+interface ReviewPagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }
 
 interface CampaignDetail {
@@ -98,10 +125,36 @@ export default function CampaignDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [publishing, setPublishing] = useState(false);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewPagination, setReviewPagination] = useState<ReviewPagination | null>(null);
+  const [reviewPage, setReviewPage] = useState(1);
+  const [reviewLoading, setReviewLoading] = useState(false);
+
+  const fetchReviews = useCallback(
+    async (page: number) => {
+      setReviewLoading(true);
+      try {
+        const res = await fetch(
+          `/api/v1/advertiser/campaigns/${id}/participations?page=${page}&limit=5`
+        );
+        const json = await res.json();
+        if (json.success) {
+          setReviews(json.data.items);
+          setReviewPagination(json.data.pagination);
+        }
+      } catch (err) {
+        console.error("Failed to fetch reviews:", err);
+      } finally {
+        setReviewLoading(false);
+      }
+    },
+    [id]
+  );
 
   useEffect(() => {
     fetchCampaign();
-  }, [id]);
+    fetchReviews(1);
+  }, [id, fetchReviews]);
 
   const fetchCampaign = async () => {
     try {
@@ -149,6 +202,7 @@ export default function CampaignDetailPage() {
 
       toast.success("캠페인이 게시되었습니다.");
       fetchCampaign();
+      fetchReviews(1);
     } catch (err) {
       console.error(err);
       toast.error("캠페인 게시에 실패했습니다. 잠시 후 다시 시도해주세요.");
@@ -337,6 +391,114 @@ export default function CampaignDetailPage() {
                 <p className="text-sm text-slate-500 italic">등록된 질문이 없습니다.</p>
               )}
             </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-lg font-semibold">
+                <MessageSquare className="h-5 w-5 text-slate-500" />
+                테스터 리뷰
+              </h2>
+              {reviewPagination && reviewPagination.total > 0 && (
+                <span className="text-sm text-slate-500">총 {reviewPagination.total}건</span>
+              )}
+            </div>
+
+            {reviewLoading ? (
+              <div className="flex justify-center py-12">
+                <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+              </div>
+            ) : reviews.length > 0 ? (
+              <div className="space-y-4">
+                {reviews.map((review) => (
+                  <div
+                    key={review.id}
+                    className="rounded-lg border border-slate-100 bg-slate-50/50 p-4"
+                  >
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="font-medium text-slate-900">{review.tester.name}</span>
+                      <span className="text-xs text-slate-400">
+                        {review.approvedAt
+                          ? new Date(review.approvedAt).toLocaleDateString("ko-KR")
+                          : new Date(review.submittedAt).toLocaleDateString("ko-KR")}
+                      </span>
+                    </div>
+
+                    {review.screenshots.length > 0 && (
+                      <div className="mb-3 flex gap-2 overflow-x-auto">
+                        {review.screenshots.map((ss) => (
+                          <div
+                            key={ss.id}
+                            className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-white"
+                          >
+                            <Image
+                              src={ss.url}
+                              alt={`스크린샷 ${ss.slot}`}
+                              fill
+                              className="object-cover"
+                              sizes="96px"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="space-y-2 text-sm">
+                      {campaign.questions[0] && (
+                        <div>
+                          <p className="text-xs text-slate-500">Q1. {campaign.questions[0].text}</p>
+                          <p className="mt-0.5 text-slate-700">{review.answer1}</p>
+                        </div>
+                      )}
+                      {campaign.questions[1] && (
+                        <div>
+                          <p className="text-xs text-slate-500">Q2. {campaign.questions[1].text}</p>
+                          <p className="mt-0.5 text-slate-700">{review.answer2}</p>
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-xs text-slate-500">자유 피드백</p>
+                        <p className="mt-0.5 text-slate-700">{review.feedback}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {reviewPagination && reviewPagination.totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 pt-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newPage = reviewPage - 1;
+                        setReviewPage(newPage);
+                        fetchReviews(newPage);
+                      }}
+                      disabled={reviewPage <= 1 || reviewLoading}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <span className="px-3 text-sm text-slate-600">
+                      {reviewPage} / {reviewPagination.totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newPage = reviewPage + 1;
+                        setReviewPage(newPage);
+                        fetchReviews(newPage);
+                      }}
+                      disabled={reviewPage >= reviewPagination.totalPages || reviewLoading}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="py-12 text-center text-slate-500">아직 승인된 리뷰가 없습니다.</div>
+            )}
           </Card>
         </div>
 
