@@ -26,13 +26,14 @@
 | Sitemap 제출 (Google) | - | ✅ 완료 |
 | **캠페인 페이지 SSR 전환** | `tester/(public)/campaigns/page.tsx` | ✅ 완료 |
 | **페이지별 SEO 키워드 분리** | `layout.tsx`, `page.tsx` | ✅ 완료 |
+| **홈페이지 SSR 전환** | `page.tsx` | ✅ 완료 |
 
 ### 배포 후 해야 할 작업
 
 | 항목 | 상태 | 설명 |
 |------|------|------|
-| 네이버 서치어드바이저 소유확인 | ⏳ 대기 | 배포 후 "소유확인" 버튼 클릭 |
-| 네이버 Sitemap 제출 | ⏳ 대기 | 소유확인 후 sitemap.xml 제출 |
+| 네이버 서치어드바이저 소유확인 | ✅ 완료 | 2026.01.21 완료 |
+| 네이버 Sitemap 제출 | ✅ 완료 | 2026.01.21 19:08 제출 완료 |
 | Google 인증 코드 추가 | 📝 선택 | Search Console에서 HTML 태그 인증 시 |
 
 ---
@@ -90,7 +91,7 @@
 
 ## 2. 페이지별 SEO 설정 현황
 
-### 2.1 메인 랜딩 페이지 (`/`) - B2B 타겟
+### 2.1 메인 랜딩 페이지 (`/`) - B2B 타겟 ⭐
 
 ```
 Title: TrueHub - 앱 테스터 모집 플랫폼 | AI 기반 사용자 피드백 분석
@@ -99,16 +100,23 @@ Canonical: https://truehub.previewapp.co.kr
 OG Image: https://truehub.previewapp.co.kr/logo.png
 ```
 
-**타겟 키워드**: 테스터 모집 플랫폼, 앱 테스트 서비스, 사용자 피드백 수집, AI 피드백 분석
+**타겟 키워드**: 테스터 모집 플랫폼, 앱 테스트 서비스, 사용자 피드백 수집, AI 피드백 분석, 베타 테스터 모집
+
+**SSR 적용**: ✅ Server Component로 전환 완료
+- 정적 콘텐츠는 서버에서 렌더링
+- 애니메이션만 클라이언트 컴포넌트로 분리 (`components/landing/`)
+- 검색엔진 크롤러가 모든 B2B 키워드를 즉시 인식 가능
 
 **페이지 내 키워드 배치**:
 | 위치 | 문구 | 포함 키워드 |
 |------|------|------------|
 | 배지 | "AI 기반 앱 테스터 모집 플랫폼" | 테스터 모집 플랫폼 |
 | H1 | "실제 유저 피드백으로 앱 성장을 가속화하세요" | 유저 피드백 |
-| 서브헤딩 | "검증된 테스터를 모집하고 진짜 사용자 피드백을 받으세요" | 테스터 모집, 사용자 피드백 |
+| 서브헤딩 | "검증된 앱 테스터를 모집하고 진짜 사용자 피드백을 받으세요" | 앱 테스터 모집, 사용자 피드백 |
+| H2 | "간단한 3단계로 테스터 모집 시작" | 테스터 모집 |
+| H2 (CTA) | "앱 테스터 모집, TrueHub와 함께하세요" | 앱 테스터 모집 |
 | CTA 버튼 | "무료로 테스터 모집 시작하기" | 테스터 모집 |
-| Footer | "앱 테스터 모집부터 AI 기반 피드백 분석까지..." | 테스터 모집, AI 피드백 분석 |
+| Footer | "앱 테스터 모집부터 AI 기반 사용자 피드백 분석까지..." | 테스터 모집, AI 피드백 분석, 베타 테스터 모집, UX 리서치 |
 
 ### 2.2 캠페인 목록 페이지 (`/tester/campaigns`) - B2C 메인 타겟 ⭐
 
@@ -210,10 +218,10 @@ Sitemap: https://truehub.previewapp.co.kr/sitemap.xml
 
 | 항목 | 상태 | 비고 |
 |------|------|------|
-| 사이트 등록 | ⏳ 진행 중 | URL 입력 완료 |
+| 사이트 등록 | ✅ 완료 | `truehub.previewapp.co.kr` |
 | 인증 코드 | ✅ 추가됨 | `5c4ec70d5959887cbfe6a3325eabe7265950877c` |
-| 소유확인 | ⏳ 대기 | **배포 후 클릭 필요** |
-| Sitemap 제출 | ⏳ 대기 | 소유확인 후 진행 |
+| 소유확인 | ✅ 완료 | 2026.01.21 완료 |
+| Sitemap 제출 | ✅ 완료 | 2026.01.21 19:08 제출 |
 
 ---
 
@@ -221,10 +229,10 @@ Sitemap: https://truehub.previewapp.co.kr/sitemap.xml
 
 ### 즉시 실행
 
-- [ ] 네이버 서치어드바이저에서 "소유확인" 클릭
-- [ ] 네이버에서 Sitemap 제출: `https://truehub.previewapp.co.kr/sitemap.xml`
-- [ ] `/sitemap.xml` 접근 가능 확인
-- [ ] `/robots.txt` 접근 가능 확인
+- [x] 네이버 서치어드바이저에서 "소유확인" 클릭 (2026.01.21 완료)
+- [x] 네이버에서 Sitemap 제출: `https://truehub.previewapp.co.kr/sitemap.xml` (2026.01.21 19:08 완료)
+- [x] `/sitemap.xml` 접근 가능 확인
+- [x] `/robots.txt` 접근 가능 확인
 
 ### 1주 후 확인
 
@@ -256,10 +264,11 @@ Sitemap: https://truehub.previewapp.co.kr/sitemap.xml
 - [x] 광고주 페이지 SEO 추가
 - [x] **캠페인 페이지 SSR 전환**
 - [x] **페이지별 SEO 키워드 분리 (B2B/B2C)**
+- [x] **홈페이지 SSR 전환** (2026.01.21)
 
-### Phase 2 (배포 후)
-- [ ] 네이버 서치어드바이저 소유확인
-- [ ] 네이버 Sitemap 제출
+### Phase 2 (배포 후) ✅
+- [x] 네이버 서치어드바이저 소유확인 (2026.01.21 완료)
+- [x] 네이버 Sitemap 제출 (2026.01.21 19:08 완료)
 - [ ] 검색 노출 모니터링 시작
 
 ### Phase 3 (1개월 후)
@@ -277,20 +286,26 @@ Sitemap: https://truehub.previewapp.co.kr/sitemap.xml
 ## 7. 파일 위치 참조
 
 ```
-src/app/
-├── layout.tsx                    # 전역 메타데이터 (B2B 키워드), OG, 네이버 인증
-├── page.tsx                      # 홈페이지 (B2B 키워드 최적화)
-├── sitemap.ts                    # sitemap.xml 생성
-├── robots.ts                     # robots.txt 생성
-├── tester/
-│   └── (public)/
-│       ├── layout.tsx            # 테스터 페이지 메타데이터 (B2C 키워드)
-│       └── campaigns/
-│           ├── page.tsx          # SSR - 캠페인 목록 (B2C 메인 타겟)
-│           ├── campaign-list.tsx # Client Component
-│           └── campaign-skeleton.tsx
-└── advertiser/
-    └── layout.tsx                # 광고주 페이지 메타데이터 (B2B 키워드)
+src/
+├── app/
+│   ├── layout.tsx                    # 전역 메타데이터 (B2B 키워드), OG, 네이버 인증
+│   ├── page.tsx                      # SSR 홈페이지 (B2B 키워드 최적화) ⭐
+│   ├── sitemap.ts                    # sitemap.xml 생성
+│   ├── robots.ts                     # robots.txt 생성
+│   ├── tester/
+│   │   └── (public)/
+│   │       ├── layout.tsx            # 테스터 페이지 메타데이터 (B2C 키워드)
+│   │       └── campaigns/
+│   │           ├── page.tsx          # SSR - 캠페인 목록 (B2C 메인 타겟) ⭐
+│   │           ├── campaign-list.tsx # Client Component
+│   │           └── campaign-skeleton.tsx
+│   └── advertiser/
+│       └── layout.tsx                # 광고주 페이지 메타데이터 (B2B 키워드)
+└── components/
+    └── landing/                      # 홈페이지 클라이언트 컴포넌트
+        ├── hero-section.tsx          # Hero 애니메이션
+        ├── animated-card.tsx         # 카드 애니메이션
+        └── cta-button.tsx            # CTA 버튼 애니메이션
 ```
 
 ---
