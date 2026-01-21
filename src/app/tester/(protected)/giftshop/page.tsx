@@ -210,32 +210,38 @@ export default function GiftShopPage() {
   }
 
   return (
-    <div className="animate-fade-in-up min-h-screen bg-slate-50 pb-24">
-      <div className="bg-gradient-to-br from-violet-600 to-indigo-600 px-5 pt-6 pb-8 text-white">
-        <h1 className="mb-2 text-2xl font-bold">상품권 교환</h1>
-        <p className="mb-4 text-sm text-violet-200">포인트를 상품권으로 교환하세요</p>
-        <Card className="border-0 bg-indigo-500 p-4">
+    <div className="animate-fade-in-up min-h-screen pb-24">
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-cyan-500 to-emerald-500 px-5 pt-6 pb-8 text-white">
+        {/* Decorative elements */}
+        <div className="pointer-events-none absolute -top-20 -right-20 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
+
+        <h1 className="relative mb-2 text-2xl font-bold">상품권 교환</h1>
+        <p className="relative mb-4 text-sm text-blue-100">포인트를 상품권으로 교환하세요</p>
+        <div className="relative rounded-[1.5rem] border border-white/20 bg-white/20 p-5 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-violet-100">사용 가능 포인트</p>
+              <p className="text-sm font-medium text-blue-100">사용 가능 포인트</p>
               <p className="text-3xl font-bold text-white tabular-nums">
                 {(summary?.availablePoints ?? 0).toLocaleString()}
                 <span className="ml-1 text-lg">P</span>
               </p>
             </div>
-            <Gift className="h-12 w-12 text-violet-200" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+              <Gift className="h-8 w-8 text-white" />
+            </div>
           </div>
-        </Card>
+        </div>
       </div>
 
       <div className="px-5 pt-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-slate-100">
-            <TabsTrigger value="shop" className="data-[state=active]:bg-white">
+          <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-slate-100 p-1">
+            <TabsTrigger value="shop" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
               <ShoppingBag className="mr-2 h-4 w-4" />
               상품권 구매
             </TabsTrigger>
-            <TabsTrigger value="history" className="data-[state=active]:bg-white">
+            <TabsTrigger value="history" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
               <Clock className="mr-2 h-4 w-4" />
               교환 내역
             </TabsTrigger>
@@ -243,19 +249,21 @@ export default function GiftShopPage() {
 
           <TabsContent value="shop" className="mt-4">
             <div className="relative mb-4">
-              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-blue-500" />
               <Input
                 placeholder="상품명 또는 브랜드 검색"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="rounded-2xl border-0 bg-white/80 pl-10 shadow-sm backdrop-blur-sm focus-visible:ring-2 focus-visible:ring-blue-200"
               />
             </div>
 
             {goods.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <ShoppingBag className="mb-4 h-12 w-12 text-slate-300" />
-                <p className="text-slate-500">검색 결과가 없습니다</p>
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-blue-100 to-cyan-100 shadow-lg shadow-blue-100/50">
+                  <ShoppingBag className="h-8 w-8 text-blue-500" />
+                </div>
+                <p className="font-medium text-slate-600">검색 결과가 없습니다</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-3">
@@ -274,8 +282,10 @@ export default function GiftShopPage() {
           <TabsContent value="history" className="mt-4">
             {exchanges.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <Gift className="mb-4 h-12 w-12 text-slate-300" />
-                <p className="font-medium text-slate-700">교환 내역이 없습니다</p>
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-blue-100 to-cyan-100 shadow-lg shadow-blue-100/50">
+                  <Gift className="h-8 w-8 text-blue-500" />
+                </div>
+                <p className="font-bold text-slate-800">교환 내역이 없습니다</p>
                 <p className="mt-1 text-sm text-slate-500">상품권을 교환하고 내역을 확인하세요</p>
               </div>
             ) : (
@@ -454,11 +464,11 @@ function GoodsCard({
   const canAfford = availablePoints >= item.discountPrice;
 
   return (
-    <Card
-      className="cursor-pointer overflow-hidden transition-all hover:shadow-md"
+    <div
+      className="cursor-pointer overflow-hidden rounded-[1.25rem] border border-white/50 bg-white/80 shadow-xl shadow-slate-200/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-200/30"
       onClick={onSelect}
     >
-      <div className="relative aspect-square bg-slate-100">
+      <div className="relative aspect-square bg-gradient-to-br from-slate-100 to-slate-50">
         <img
           src={item.goodsImgS}
           alt={item.goodsName}
@@ -466,12 +476,12 @@ function GoodsCard({
           loading="lazy"
         />
         {item.discountRate > 0 && (
-          <Badge className="absolute top-2 right-2 bg-red-500">{item.discountRate}%</Badge>
+          <Badge className="absolute top-2 right-2 rounded-full bg-gradient-to-r from-red-500 to-rose-500 shadow-md">{item.discountRate}%</Badge>
         )}
       </div>
       <div className="p-3">
-        <p className="mb-1 text-xs text-slate-500">{item.brandName}</p>
-        <p className="mb-2 line-clamp-2 text-sm font-medium text-slate-900">{item.goodsName}</p>
+        <p className="mb-1 text-xs font-medium text-slate-500">{item.brandName}</p>
+        <p className="mb-2 line-clamp-2 text-sm font-semibold text-slate-800">{item.goodsName}</p>
         <div className="flex items-baseline justify-between">
           <div>
             {item.salePrice !== item.discountPrice && (
@@ -479,16 +489,16 @@ function GoodsCard({
                 {item.salePrice.toLocaleString()}P
               </p>
             )}
-            <p className="font-bold text-violet-600">{item.discountPrice.toLocaleString()}P</p>
+            <p className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text font-bold text-transparent">{item.discountPrice.toLocaleString()}P</p>
           </div>
           {canAfford ? (
-            <ChevronRight className="h-5 w-5 text-slate-400" />
+            <ChevronRight className="h-5 w-5 text-blue-400" />
           ) : (
-            <span className="text-xs text-red-500">포인트 부족</span>
+            <span className="text-xs font-medium text-red-500">포인트 부족</span>
           )}
         </div>
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -497,28 +507,28 @@ function ExchangeCard({ item }: { item: ExchangeItem }) {
   const StatusIcon = config.icon;
 
   return (
-    <Card className="overflow-hidden">
+    <div className="overflow-hidden rounded-[1.25rem] border border-white/50 bg-white/80 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
       <div className="flex gap-3 p-4">
         {item.goodsImageUrl && (
           <img
             src={item.goodsImageUrl}
             alt={item.goodsName}
-            className="h-16 w-16 rounded-lg object-cover"
+            className="h-16 w-16 rounded-xl object-cover"
           />
         )}
         <div className="flex-1">
           <div className="mb-1 flex items-center justify-between">
-            <p className="text-xs text-slate-500">{item.brandName}</p>
-            <Badge variant="secondary" className={cn("text-xs", config.className)}>
+            <p className="text-xs font-medium text-slate-500">{item.brandName}</p>
+            <Badge variant="secondary" className={cn("rounded-full text-xs", config.className)}>
               <StatusIcon
                 className={cn("mr-1 h-3 w-3", item.status === "PROCESSING" && "animate-spin")}
               />
               {config.label}
             </Badge>
           </div>
-          <p className="font-medium text-slate-900">{item.goodsName}</p>
+          <p className="font-semibold text-slate-800">{item.goodsName}</p>
           <div className="mt-2 flex items-center justify-between">
-            <p className="text-sm font-bold text-violet-600">
+            <p className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-sm font-bold text-transparent">
               -{item.pointsUsed.toLocaleString()}P
             </p>
             <p className="text-xs text-slate-400">
@@ -531,40 +541,40 @@ function ExchangeCard({ item }: { item: ExchangeItem }) {
             </p>
           )}
           {item.status === "FAILED" && item.failReason && (
-            <p className="mt-1 text-xs text-red-500">사유: {item.failReason}</p>
+            <p className="mt-1 text-xs font-medium text-red-500">사유: {item.failReason}</p>
           )}
         </div>
       </div>
       {item.status === "COMPLETED" && item.couponImageUrl && (
-        <div className="border-t bg-slate-50 p-3">
+        <div className="border-t border-slate-100 bg-gradient-to-r from-blue-50/50 to-cyan-50/50 p-3">
           <a
             href={item.couponImageUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-violet-600 hover:underline"
+            className="text-sm font-medium text-blue-600 hover:underline"
           >
             쿠폰 이미지 보기
           </a>
         </div>
       )}
-    </Card>
+    </div>
   );
 }
 
 function LoadingSkeleton() {
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="bg-gradient-to-br from-violet-600 to-indigo-600 px-5 pt-6 pb-8">
+    <div className="min-h-screen">
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-cyan-500 to-emerald-500 px-5 pt-6 pb-8">
         <Skeleton className="mb-2 h-8 w-32 bg-white/20" />
         <Skeleton className="mb-4 h-4 w-48 bg-white/20" />
-        <Skeleton className="h-24 rounded-xl bg-white/20" />
+        <Skeleton className="h-28 rounded-[1.5rem] bg-white/20" />
       </div>
       <div className="px-5 pt-4">
-        <Skeleton className="mb-4 h-10 w-full" />
-        <Skeleton className="mb-4 h-10 w-full" />
+        <Skeleton className="mb-4 h-12 w-full rounded-2xl" />
+        <Skeleton className="mb-4 h-12 w-full rounded-2xl" />
         <div className="grid grid-cols-2 gap-3">
           {[1, 2, 3, 4].map((i) => (
-            <Skeleton key={i} className="aspect-[3/4] rounded-xl" />
+            <Skeleton key={i} className="aspect-[3/4] rounded-[1.25rem]" />
           ))}
         </div>
       </div>

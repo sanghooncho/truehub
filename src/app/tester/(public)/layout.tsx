@@ -8,27 +8,33 @@ export default async function TesterPublicLayout({ children }: { children: React
   const session = await auth();
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
-      <header className="fixed top-0 z-50 w-full border-b border-slate-100 bg-white/90 backdrop-blur-md">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-blue-50/30 to-cyan-50/20 pb-20">
+      {/* Grid pattern overlay */}
+      <div className="pointer-events-none fixed inset-0 bg-[linear-gradient(to_right,#8882_1px,transparent_1px),linear-gradient(to_bottom,#8882_1px,transparent_1px)] bg-[size:24px_24px] opacity-[0.15]" />
+
+      <header className="fixed top-0 z-50 w-full border-b border-white/50 bg-white/70 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-md items-center justify-between px-5">
-          <Link href="/tester/campaigns">
+          <Link href="/tester/campaigns" className="transition-transform hover:scale-105">
             <Image src="/logo.png" alt="TrueHub" width={100} height={28} />
           </Link>
           {session?.user ? (
-            <Link href="/tester/settings" className="rounded-full p-2 hover:bg-slate-100">
-              <User className="h-5 w-5 text-slate-600" />
+            <Link
+              href="/tester/settings"
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 shadow-sm transition-all hover:shadow-md hover:scale-105"
+            >
+              <User className="h-4 w-4 text-slate-600" />
             </Link>
           ) : (
             <Link
               href="/tester/login"
-              className="bg-primary rounded-lg px-4 py-2 text-sm font-medium text-white"
+              className="rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5"
             >
               로그인
             </Link>
           )}
         </div>
       </header>
-      <main className="mx-auto max-w-md pt-14">{children}</main>
+      <main className="relative mx-auto max-w-md pt-14">{children}</main>
       <BottomNav />
     </div>
   );

@@ -187,7 +187,8 @@ export default function MyParticipationsPage() {
 
   return (
     <div className="animate-fade-in-up px-5 pt-5 pb-8">
-      <h1 className="mb-6 text-2xl font-bold text-slate-900">내 참여</h1>
+      <h1 className="mb-2 bg-gradient-to-r from-blue-600 via-cyan-500 to-emerald-500 bg-clip-text text-2xl font-bold text-transparent">내 참여</h1>
+      <p className="mb-6 text-sm text-slate-500">캠페인 참여 현황을 확인하세요</p>
 
       <div className="scrollbar-hide mb-6 flex gap-2 overflow-x-auto pb-2">
         {FILTER_TABS.map((tab) => (
@@ -245,10 +246,10 @@ function FilterButton({
     <button
       onClick={onClick}
       className={cn(
-        "flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-all active:scale-95",
+        "flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition-all active:scale-95",
         active
-          ? "bg-primary text-white shadow-sm"
-          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+          ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/25"
+          : "bg-white/80 text-slate-600 shadow-sm hover:bg-white hover:shadow-md"
       )}
     >
       {children}
@@ -256,7 +257,7 @@ function FilterButton({
         <span
           className={cn(
             "flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs tabular-nums",
-            active ? "bg-white/20 text-white" : "bg-slate-200 text-slate-600"
+            active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"
           )}
         >
           {count}
@@ -285,32 +286,32 @@ function ParticipationCard({
       className="animate-fade-in-up block"
       style={style}
     >
-      <div className="group shadow-toss rounded-2xl border border-slate-100 bg-white p-4 transition-all hover:border-slate-200 hover:shadow-md active:scale-[0.98]">
+      <div className="group rounded-[1.25rem] border border-white/50 bg-white/80 p-5 shadow-xl shadow-slate-200/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-200/30 active:scale-[0.98]">
         <div className="mb-3 flex items-center justify-between">
-          <Badge className={cn("border", config.className)}>{config.label}</Badge>
-          <span className="text-xs text-slate-400">{relativeTime}</span>
+          <Badge className={cn("border rounded-full px-3", config.className)}>{config.label}</Badge>
+          <span className="text-xs font-medium text-slate-400">{relativeTime}</span>
         </div>
 
-        <h3 className="group-hover:text-primary mb-1 line-clamp-2 text-base font-semibold text-slate-900">
+        <h3 className="mb-1 line-clamp-2 text-base font-bold text-slate-800 transition-colors group-hover:text-blue-600">
           {participation.campaign.title}
         </h3>
 
-        <p className="mb-3 text-sm text-slate-500">{participation.campaign.advertiserName}</p>
+        <p className="mb-3 text-sm font-medium text-slate-500">{participation.campaign.advertiserName}</p>
 
         {participation.status === "REJECTED" && participation.rejectReason && (
-          <div className="mb-3 rounded-lg bg-red-50 p-3">
+          <div className="mb-3 rounded-xl bg-gradient-to-r from-red-50 to-rose-50 p-3">
             <p className="text-sm text-red-600">
-              <span className="font-medium">반려 사유: </span>
+              <span className="font-semibold">반려 사유: </span>
               {participation.rejectReason}
             </p>
           </div>
         )}
 
         <div className="flex items-center justify-between">
-          <span className="text-secondary text-xl font-bold tabular-nums">
+          <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-xl font-bold tabular-nums text-transparent">
             {participation.rewardAmount.toLocaleString()}P
           </span>
-          <ChevronRight className="h-5 w-5 text-slate-300 transition-transform group-hover:translate-x-1 group-hover:text-slate-400" />
+          <ChevronRight className="h-5 w-5 text-slate-300 transition-transform group-hover:translate-x-1 group-hover:text-blue-500" />
         </div>
       </div>
     </Link>
@@ -321,7 +322,7 @@ function LoadingSkeleton() {
   return (
     <div className="space-y-4">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="shadow-toss rounded-2xl border border-slate-100 bg-white p-4">
+        <div key={i} className="rounded-[1.25rem] border border-white/50 bg-white/80 p-5 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
           <div className="mb-3 flex items-center justify-between">
             <Skeleton className="h-6 w-16 rounded-full" />
             <Skeleton className="h-4 w-12" />
@@ -370,15 +371,15 @@ function EmptyState({ activeTab }: { activeTab: FilterTab }) {
 
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-        <FileSearch className="h-8 w-8 text-slate-400" />
+      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-blue-100 to-cyan-100 shadow-lg shadow-blue-100/50">
+        <FileSearch className="h-8 w-8 text-blue-500" />
       </div>
-      <h3 className="mb-2 text-lg font-semibold text-slate-900">{title}</h3>
+      <h3 className="mb-2 text-lg font-bold text-slate-800">{title}</h3>
       <p className="mb-6 text-sm text-slate-500">{description}</p>
       {activeTab === "ALL" && (
         <Link
           href="/tester/campaigns"
-          className="bg-primary rounded-xl px-6 py-3 text-base font-semibold text-white transition-transform active:scale-95"
+          className="rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/30 active:scale-95"
         >
           캠페인 둘러보기
         </Link>

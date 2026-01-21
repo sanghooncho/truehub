@@ -5,57 +5,72 @@ import { signIn } from "next-auth/react";
 
 export default function TesterLoginPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      <main className="flex flex-1 flex-col items-center justify-center px-5">
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-slate-50 via-blue-50/50 to-cyan-50/30">
+      {/* Grid pattern overlay */}
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#8882_1px,transparent_1px),linear-gradient(to_bottom,#8882_1px,transparent_1px)] bg-[size:24px_24px] opacity-[0.15]" />
+
+      {/* Gradient orbs */}
+      <div className="pointer-events-none absolute -top-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-blue-400/30 to-cyan-400/30 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-emerald-400/20 to-cyan-400/20 blur-3xl" />
+
+      <main className="relative flex flex-1 flex-col items-center justify-center px-5">
         <div className="w-full max-w-md">
-          <div className="mb-12 text-center">
+          <div className="mb-10 text-center">
             <Image
               src="/logo.png"
               alt="TrueHub"
               width={180}
               height={120}
-              className="mx-auto mb-3"
+              className="mx-auto mb-4"
               priority
             />
-            <p className="text-base text-slate-500">앱을 체험하고 리워드를 받으세요</p>
+            <h1 className="mb-2 bg-gradient-to-r from-blue-600 via-cyan-500 to-emerald-500 bg-clip-text text-xl font-bold text-transparent">
+              앱 테스터가 되어보세요
+            </h1>
+            <p className="text-sm text-slate-500">앱을 체험하고 리워드를 받으세요</p>
           </div>
 
-          <div className="space-y-3">
-            <button
-              onClick={() => signIn("kakao", { callbackUrl: "/tester/campaigns" })}
-              className="flex h-[52px] w-full items-center justify-center gap-3 rounded-xl bg-[#FEE500] font-semibold text-[#191919] transition-transform active:scale-95"
-            >
-              <KakaoIcon />
-              <span>카카오로 시작하기</span>
-            </button>
+          <div className="rounded-[1.5rem] bg-white/80 p-6 shadow-xl shadow-slate-200/50 backdrop-blur-sm">
+            <p className="mb-4 text-center text-sm font-medium text-slate-600">
+              SNS 계정으로 간편하게 시작하세요
+            </p>
+            <div className="space-y-3">
+              <button
+                onClick={() => signIn("kakao", { callbackUrl: "/tester/campaigns" })}
+                className="flex h-[52px] w-full items-center justify-center gap-3 rounded-2xl bg-[#FEE500] font-semibold text-[#191919] shadow-lg shadow-amber-200/50 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-amber-200/50 active:scale-[0.98]"
+              >
+                <KakaoIcon />
+                <span>카카오로 시작하기</span>
+              </button>
 
-            <button
-              onClick={() => signIn("naver", { callbackUrl: "/tester/campaigns" })}
-              className="flex h-[52px] w-full items-center justify-center gap-3 rounded-xl bg-[#03C75A] font-semibold text-white transition-transform active:scale-95"
-            >
-              <NaverIcon />
-              <span>네이버로 시작하기</span>
-            </button>
+              <button
+                onClick={() => signIn("naver", { callbackUrl: "/tester/campaigns" })}
+                className="flex h-[52px] w-full items-center justify-center gap-3 rounded-2xl bg-[#03C75A] font-semibold text-white shadow-lg shadow-emerald-200/50 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-200/50 active:scale-[0.98]"
+              >
+                <NaverIcon />
+                <span>네이버로 시작하기</span>
+              </button>
 
-            <button
-              onClick={() => signIn("google", { callbackUrl: "/tester/campaigns" })}
-              className="flex h-[52px] w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white font-semibold text-slate-700 transition-transform active:scale-95"
-            >
-              <GoogleIcon />
-              <span>Google로 시작하기</span>
-            </button>
+              <button
+                onClick={() => signIn("google", { callbackUrl: "/tester/campaigns" })}
+                className="flex h-[52px] w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white font-semibold text-slate-700 shadow-lg shadow-slate-200/50 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-200/50 active:scale-[0.98]"
+              >
+                <GoogleIcon />
+                <span>Google로 시작하기</span>
+              </button>
+            </div>
           </div>
         </div>
       </main>
 
-      <footer className="px-5 pt-4 pb-8">
+      <footer className="relative px-5 pt-4 pb-8">
         <p className="text-center text-xs leading-relaxed text-slate-400">
           시작하기를 누르면{" "}
-          <a href="/terms" className="underline underline-offset-2">
+          <a href="/terms" className="text-blue-500 underline underline-offset-2 hover:text-blue-600">
             이용약관
           </a>{" "}
           및{" "}
-          <a href="/privacy" className="underline underline-offset-2">
+          <a href="/privacy" className="text-blue-500 underline underline-offset-2 hover:text-blue-600">
             개인정보처리방침
           </a>
           에 동의하는 것으로 간주됩니다.

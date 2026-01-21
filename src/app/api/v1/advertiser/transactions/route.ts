@@ -34,13 +34,13 @@ export async function GET(request: NextRequest) {
 
     const [transactions, total] = await Promise.all([
       prisma.creditTransaction.findMany({
-        where: { walletId: wallet.id, type: "CONSUME" },
+        where: { walletId: wallet.id },
         orderBy: { createdAt: "desc" },
         skip,
         take: limit,
       }),
       prisma.creditTransaction.count({
-        where: { walletId: wallet.id, type: "CONSUME" },
+        where: { walletId: wallet.id },
       }),
     ]);
 
@@ -59,11 +59,15 @@ export async function GET(request: NextRequest) {
     const participationMap = new Map(participations.map((p) => [p.id, p]));
 
     const items = transactions.map((t) => {
-      const participation = t.refId ? participationMap.get(t.refId) : null;
+      const participation =
+        t.refType === "participation" && t.refId ? participationMap.get(t.refId) : null;
       return {
         id: t.id,
+        type: t.type,
         amount: Math.abs(t.amount),
         balanceAfter: t.balanceAfter,
+        description: t.description,
+        refType: t.refType,
         createdAt: t.createdAt.toISOString(),
         campaign: participation?.campaign
           ? { id: participation.campaign.id, title: participation.campaign.title }

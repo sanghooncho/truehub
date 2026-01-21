@@ -76,24 +76,25 @@ export default function RewardsPage() {
 
   return (
     <div className="animate-fade-in-up p-5">
-      <h1 className="mb-6 text-2xl font-bold text-slate-900">리워드</h1>
+      <h1 className="mb-2 bg-gradient-to-r from-blue-600 via-cyan-500 to-emerald-500 bg-clip-text text-2xl font-bold text-transparent">리워드</h1>
+      <p className="mb-6 text-sm text-slate-500">캠페인 참여로 받은 리워드를 확인하세요</p>
 
       <div className="mb-6 grid grid-cols-2 gap-4">
-        <Card className="p-4">
-          <p className="text-sm text-slate-500">총 적립</p>
-          <p className="text-2xl font-bold text-slate-900 tabular-nums">
+        <div className="rounded-[1.25rem] border border-white/50 bg-gradient-to-br from-white to-blue-50/50 p-4 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
+          <p className="mb-1 text-sm font-medium text-slate-500">총 적립</p>
+          <p className="text-2xl font-bold text-slate-800 tabular-nums">
             {(data?.totalEarned ?? 0).toLocaleString()}P
           </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-sm text-slate-500">지급 대기</p>
-          <p className="text-secondary text-2xl font-bold tabular-nums">
+        </div>
+        <div className="rounded-[1.25rem] border border-white/50 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 shadow-xl shadow-blue-100/40 backdrop-blur-sm">
+          <p className="mb-1 text-sm font-semibold text-blue-600">지급 대기</p>
+          <p className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-2xl font-bold tabular-nums text-transparent">
             {(data?.totalPending ?? 0).toLocaleString()}P
           </p>
-        </Card>
+        </div>
       </div>
 
-      <h2 className="mb-4 text-lg font-semibold text-slate-900">리워드 내역</h2>
+      <h2 className="mb-4 text-lg font-bold text-slate-800">리워드 내역</h2>
 
       {data?.items.length === 0 ? (
         <EmptyState />
@@ -122,16 +123,16 @@ function RewardItem({ reward, style }: { reward: Reward; style?: React.CSSProper
 
   return (
     <div
-      className="animate-fade-in-up flex items-center justify-between rounded-xl bg-white p-4 shadow-sm"
+      className="animate-fade-in-up flex items-center justify-between rounded-[1.25rem] border border-white/50 bg-white/80 p-4 shadow-xl shadow-slate-200/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-blue-200/30"
       style={style}
     >
       <div>
-        <p className="font-medium text-slate-900">{reward.title}</p>
-        <p className="text-xs text-slate-400">{relativeTime}</p>
+        <p className="font-semibold text-slate-800">{reward.title}</p>
+        <p className="text-xs font-medium text-slate-400">{relativeTime}</p>
       </div>
       <div className="text-right">
-        <p className="text-secondary font-bold tabular-nums">+{reward.amount.toLocaleString()}P</p>
-        <p className={cn("text-xs", config.className)}>{config.label}</p>
+        <p className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text font-bold tabular-nums text-transparent">+{reward.amount.toLocaleString()}P</p>
+        <p className={cn("text-xs font-medium", config.className)}>{config.label}</p>
       </div>
     </div>
   );
@@ -140,15 +141,16 @@ function RewardItem({ reward, style }: { reward: Reward; style?: React.CSSProper
 function LoadingSkeleton() {
   return (
     <div className="p-5">
-      <Skeleton className="mb-6 h-8 w-24" />
+      <Skeleton className="mb-2 h-8 w-24" />
+      <Skeleton className="mb-6 h-4 w-48" />
       <div className="mb-6 grid grid-cols-2 gap-4">
-        <Skeleton className="h-20 rounded-xl" />
-        <Skeleton className="h-20 rounded-xl" />
+        <Skeleton className="h-24 rounded-[1.25rem]" />
+        <Skeleton className="h-24 rounded-[1.25rem]" />
       </div>
       <Skeleton className="mb-4 h-6 w-28" />
       <div className="space-y-3">
         {[1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-20 rounded-xl" />
+          <Skeleton key={i} className="h-20 rounded-[1.25rem]" />
         ))}
       </div>
     </div>
@@ -158,10 +160,10 @@ function LoadingSkeleton() {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-        <Gift className="h-8 w-8 text-slate-400" />
+      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-blue-100 to-cyan-100 shadow-lg shadow-blue-100/50">
+        <Gift className="h-8 w-8 text-blue-500" />
       </div>
-      <h3 className="mb-2 text-lg font-semibold text-slate-900">아직 리워드가 없어요</h3>
+      <h3 className="mb-2 text-lg font-bold text-slate-800">아직 리워드가 없어요</h3>
       <p className="text-sm text-slate-500">캠페인에 참여하고 승인되면 리워드가 지급돼요!</p>
     </div>
   );

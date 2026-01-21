@@ -24,8 +24,11 @@ interface Topup {
 
 interface Transaction {
   id: string;
+  type: "TOPUP" | "CONSUME" | "REFUND" | "ADJUST" | "BONUS";
   amount: number;
   balanceAfter: number;
+  description: string | null;
+  refType: string | null;
   createdAt: string;
   campaign: { id: string; title: string } | null;
   tester: { id: string; name: string } | null;
@@ -179,8 +182,8 @@ export default function AdvertiserCreditsPage() {
       {transactions && transactions.pagination.total > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>사용 내역</CardTitle>
-            <CardDescription>총 {transactions.pagination.total}건의 사용 내역</CardDescription>
+            <CardTitle>크레딧 내역</CardTitle>
+            <CardDescription>총 {transactions.pagination.total}건의 크레딧 내역</CardDescription>
           </CardHeader>
           <CardContent>
             {txLoading ? (
@@ -190,25 +193,7 @@ export default function AdvertiserCreditsPage() {
             ) : (
               <div className="space-y-3">
                 {transactions.items.map((tx) => (
-                  <div
-                    key={tx.id}
-                    className="flex items-center justify-between rounded-lg border border-slate-100 p-4"
-                  >
-                    <div className="space-y-1">
-                      <p className="font-medium text-slate-900">
-                        {tx.campaign?.title || "캠페인 정보 없음"}
-                      </p>
-                      <p className="text-sm text-slate-500">
-                        테스터: {tx.tester?.name || "알 수 없음"}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-rose-600">-{tx.amount.toLocaleString()}원</p>
-                      <p className="text-xs text-slate-400">
-                        {new Date(tx.createdAt).toLocaleDateString("ko-KR")}
-                      </p>
-                    </div>
-                  </div>
+                  <TransactionItem key={tx.id} tx={tx} />
                 ))}
               </div>
             )}
@@ -293,4 +278,74 @@ function TopupStatusBadge({ status }: { status: string }) {
   };
   const { label, className } = config[status] || { label: status, className: "bg-slate-100" };
   return <Badge className={className}>{label}</Badge>;
+}
+
+function TransactionItem({ tx }: { tx: Transaction }) {
+  const isPositive = tx.type === "TOPUP" || tx.type === "BONUS" || tx.type === "REFUND";
+
+  const getTitle = () => {
+    switch (tx.type) {
+      case "BONUS":
+        return tx.description || "보너스";
+      case "TOPUP":
+        return tx.description || "크레딧 충전";
+      case "CONSUME":
+        return tx.campaign?.title || "캠페인 사용";
+      case "REFUND":
+        return tx.description || "환불";
+      case "ADJUST":
+        return tx.description || "조정";
+      default:
+        return "크레딧 변동";
+    }
+  };
+
+  const getSubtitle = () => {
+    switch (tx.type) {
+      case "CONSUME":
+        return tx.tester ? `테스터: ${tx.tester.name}` : null;
+      case "BONUS":
+      case "TOPUP":
+      case "REFUND":
+      case "ADJUST":
+        return null;
+      default:
+        return null;
+    }
+  };
+
+  const getBadge = () => {
+    const config: Record<string, { label: string; className: string }> = {
+      BONUS: { label: "보너스", className: "bg-emerald-100 text-emerald-700" },
+      TOPUP: { label: "충전", className: "bg-blue-100 text-blue-700" },
+      CONSUME: { label: "사용", className: "bg-rose-100 text-rose-700" },
+      REFUND: { label: "환불", className: "bg-amber-100 text-amber-700" },
+      ADJUST: { label: "조정", className: "bg-slate-100 text-slate-600" },
+    };
+    return config[tx.type] || { label: tx.type, className: "bg-slate-100" };
+  };
+
+  const subtitle = getSubtitle();
+  const badge = getBadge();
+
+  return (
+    <div className="flex items-center justify-between rounded-lg border border-slate-100 p-4">
+      <div className="space-y-1">
+        <div className="flex items-center gap-2">
+          <p className="font-medium text-slate-900">{getTitle()}</p>
+          <Badge className={badge.className}>{badge.label}</Badge>
+        </div>
+        {subtitle && <p className="text-sm text-slate-500">{subtitle}</p>}
+      </div>
+      <div className="text-right">
+        <p className={`font-semibold ${isPositive ? "text-emerald-600" : "text-rose-600"}`}>
+          {isPositive ? "+" : "-"}
+          {tx.amount.toLocaleString()}원
+        </p>
+        <p className="text-xs text-slate-400">
+          {new Date(tx.createdAt).toLocaleDateString("ko-KR")}
+        </p>
+      </div>
+    </div>
+  );
 }

@@ -91,68 +91,68 @@ export default function CampaignDetailPage() {
       transition={{ duration: 0.3 }}
       className="pb-24"
     >
-      <div className="sticky top-14 z-40 border-b border-slate-100 bg-white/80 backdrop-blur-lg">
+      <div className="sticky top-14 z-40 border-b border-white/50 bg-white/70 backdrop-blur-xl">
         <div className="flex h-12 items-center gap-3 px-5">
           <button
             onClick={() => router.back()}
-            className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-slate-100"
+            className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 shadow-sm transition-all hover:shadow-md hover:scale-105"
           >
             <ArrowLeft className="h-5 w-5 text-slate-700" />
           </button>
-          <span className="text-base font-semibold text-slate-900">캠페인 상세</span>
+          <span className="text-base font-bold text-slate-800">캠페인 상세</span>
         </div>
       </div>
 
-      <div className="space-y-4 bg-slate-50 p-4 pb-8">
-        <section className="rounded-2xl bg-white p-5 shadow-sm">
+      <div className="space-y-4 p-4 pb-8">
+        <section className="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
           {campaign.isParticipated && (
-            <Badge className="mb-3 border-transparent bg-emerald-100 text-emerald-700">
+            <Badge className="mb-3 border-transparent bg-gradient-to-r from-emerald-100 to-cyan-100 text-emerald-700">
               <CheckCircle2 className="mr-1 h-3 w-3" />
               이미 참여함
             </Badge>
           )}
-          <h1 className="mb-2 text-xl leading-tight font-bold text-slate-900">{campaign.title}</h1>
-          <p className="mb-4 text-sm text-slate-500">{campaign.advertiserName}</p>
+          <h1 className="mb-2 text-xl leading-tight font-bold text-slate-800">{campaign.title}</h1>
+          <p className="mb-4 text-sm font-medium text-slate-500">{campaign.advertiserName}</p>
 
-          <div className="bg-secondary/10 mb-4 rounded-xl p-4 text-center">
-            <p className="mb-1 text-xs font-medium text-slate-500">참여 리워드</p>
-            <span className="text-secondary text-3xl font-bold tabular-nums">
+          <div className="mb-4 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 p-5 text-center">
+            <p className="mb-1 text-xs font-semibold text-blue-600">참여 리워드</p>
+            <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-3xl font-bold tabular-nums text-transparent">
               {campaign.rewardAmount.toLocaleString()}P
             </span>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-slate-50 p-3 text-center">
+            <div className="rounded-xl bg-gradient-to-br from-slate-50 to-blue-50/50 p-3 text-center">
               <div className="mb-1 flex items-center justify-center gap-1.5 text-slate-500">
-                <Clock className="h-3.5 w-3.5" />
-                <span className="text-xs font-medium">남은 기간</span>
+                <Clock className="h-3.5 w-3.5 text-blue-500" />
+                <span className="text-xs font-semibold">남은 기간</span>
               </div>
-              <p className="text-lg font-bold text-slate-900 tabular-nums">
+              <p className="text-lg font-bold text-slate-800 tabular-nums">
                 {getDday(campaign.endAt)}
               </p>
             </div>
-            <div className="rounded-xl bg-slate-50 p-3 text-center">
+            <div className="rounded-xl bg-gradient-to-br from-slate-50 to-emerald-50/50 p-3 text-center">
               <div className="mb-1 flex items-center justify-center gap-1.5 text-slate-500">
-                <Users className="h-3.5 w-3.5" />
-                <span className="text-xs font-medium">남은 자리</span>
+                <Users className="h-3.5 w-3.5 text-emerald-500" />
+                <span className="text-xs font-semibold">남은 자리</span>
               </div>
-              <p className="text-lg font-bold text-slate-900 tabular-nums">
+              <p className="text-lg font-bold text-slate-800 tabular-nums">
                 {campaign.remainingSlots}명
               </p>
             </div>
           </div>
         </section>
 
-        <section className="rounded-2xl bg-white p-5 shadow-sm">
-          <h2 className="mb-3 text-base font-semibold text-slate-900">캠페인 소개</h2>
+        <section className="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
+          <h2 className="mb-3 text-base font-bold text-slate-800">캠페인 소개</h2>
           <p className="text-sm leading-relaxed whitespace-pre-wrap text-slate-600">
             {campaign.description}
           </p>
         </section>
 
         {(campaign.appLinkIos || campaign.appLinkAndroid) && (
-          <section className="rounded-2xl bg-white p-5 shadow-sm">
-            <h2 className="mb-3 text-base font-semibold text-slate-900">앱 다운로드</h2>
+          <section className="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
+            <h2 className="mb-3 text-base font-bold text-slate-800">앱 다운로드</h2>
             <div className="flex gap-3">
               {campaign.appLinkIos && (
                 <motion.a
@@ -160,7 +160,7 @@ export default function CampaignDetailPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   whileTap={{ scale: 0.96 }}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 font-medium text-white transition-transform"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-3 font-semibold text-white shadow-lg shadow-slate-400/30 transition-all hover:-translate-y-0.5 hover:shadow-xl"
                 >
                   <Apple className="h-5 w-5" />
                   App Store
@@ -172,7 +172,7 @@ export default function CampaignDetailPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   whileTap={{ scale: 0.96 }}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 font-medium text-white transition-transform"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-4 py-3 font-semibold text-white shadow-lg shadow-emerald-400/30 transition-all hover:-translate-y-0.5 hover:shadow-xl"
                 >
                   <Smartphone className="h-5 w-5" />
                   Play Store
@@ -182,8 +182,8 @@ export default function CampaignDetailPage() {
           </section>
         )}
 
-        <section className="rounded-2xl bg-white p-5 shadow-sm">
-          <h2 className="mb-4 text-base font-semibold text-slate-900">참여 방법</h2>
+        <section className="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
+          <h2 className="mb-4 text-base font-bold text-slate-800">참여 방법</h2>
           <div className="space-y-3">
             <StepItem
               number={1}
@@ -203,13 +203,13 @@ export default function CampaignDetailPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl bg-white p-5 shadow-sm">
-          <h2 className="mb-4 text-base font-semibold text-slate-900">답변할 질문</h2>
+        <section className="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
+          <h2 className="mb-4 text-base font-bold text-slate-800">답변할 질문</h2>
           <div className="space-y-3">
             {campaign.questions.map((q) => (
-              <div key={q.order} className="rounded-xl bg-slate-50 p-4">
+              <div key={q.order} className="rounded-xl bg-gradient-to-br from-slate-50 to-blue-50/50 p-4">
                 <div className="flex items-start gap-3">
-                  <span className="bg-primary flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-xs font-bold text-white shadow-md shadow-blue-200">
                     {q.order}
                   </span>
                   <p className="text-sm leading-relaxed text-slate-700">{q.text}</p>
@@ -220,19 +220,19 @@ export default function CampaignDetailPage() {
         </section>
       </div>
 
-      <div className="pb-safe fixed right-0 bottom-16 left-0 border-t border-slate-100 bg-white p-4">
+      <div className="pb-safe fixed right-0 bottom-16 left-0 border-t border-white/50 bg-white/80 p-4 backdrop-blur-xl">
         <div className="mx-auto max-w-md">
           {campaign.isParticipated ? (
             <button
               disabled
-              className="h-[52px] w-full cursor-not-allowed rounded-xl bg-slate-100 text-base font-semibold text-slate-400"
+              className="h-[52px] w-full cursor-not-allowed rounded-2xl bg-slate-100 text-base font-semibold text-slate-400"
             >
               이미 참여한 캠페인이에요
             </button>
           ) : campaign.remainingSlots <= 0 ? (
             <button
               disabled
-              className="h-[52px] w-full cursor-not-allowed rounded-xl bg-slate-100 text-base font-semibold text-slate-400"
+              className="h-[52px] w-full cursor-not-allowed rounded-2xl bg-slate-100 text-base font-semibold text-slate-400"
             >
               모집이 마감되었어요
             </button>
@@ -240,7 +240,7 @@ export default function CampaignDetailPage() {
             <Link href={`/tester/submit/${campaignId}`}>
               <motion.button
                 whileTap={{ scale: 0.96 }}
-                className="bg-primary h-[52px] w-full rounded-xl text-base font-semibold text-white transition-transform active:scale-95"
+                className="h-[52px] w-full rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/30 active:scale-95"
               >
                 참여하고 {campaign.rewardAmount.toLocaleString()}P 받기
               </motion.button>
@@ -262,12 +262,12 @@ function StepItem({
   description: string;
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-xl border border-slate-100 bg-white p-4">
-      <span className="bg-primary/10 text-primary flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold">
+    <div className="flex items-start gap-3 rounded-xl border border-white/50 bg-gradient-to-br from-white to-blue-50/30 p-4 shadow-sm">
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 text-sm font-bold text-blue-600">
         {number}
       </span>
       <div>
-        <p className="mb-0.5 text-sm font-semibold text-slate-900">{title}</p>
+        <p className="mb-0.5 text-sm font-semibold text-slate-800">{title}</p>
         <p className="text-xs text-slate-500">{description}</p>
       </div>
     </div>

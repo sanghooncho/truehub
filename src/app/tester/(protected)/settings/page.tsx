@@ -76,28 +76,33 @@ export default function TesterSettingsPage() {
 
   return (
     <div className="p-5">
-      <h1 className="mb-6 text-2xl font-bold text-slate-900">설정</h1>
-      <Card className="divide-y divide-slate-100">
+      <h1 className="mb-2 bg-gradient-to-r from-blue-600 via-cyan-500 to-emerald-500 bg-clip-text text-2xl font-bold text-transparent">설정</h1>
+      <p className="mb-6 text-sm text-slate-500">계정 및 서비스 설정을 관리하세요</p>
+
+      <div className="mb-6 overflow-hidden rounded-[1.25rem] border border-white/50 bg-white/80 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
         <SettingsItem
           icon={<User className="h-5 w-5" />}
           label="내 정보"
           onClick={() => setShowUserInfo(true)}
         />
+        <div className="mx-4 border-t border-slate-100" />
         <SettingsItem
           icon={<FileText className="h-5 w-5" />}
           label="이용약관"
           onClick={() => router.push("/tester/settings/terms")}
         />
+        <div className="mx-4 border-t border-slate-100" />
         <SettingsItem
           icon={<Shield className="h-5 w-5" />}
           label="개인정보처리방침"
           onClick={() => router.push("/tester/settings/privacy")}
         />
-      </Card>
-      <div className="mt-6 space-y-3">
+      </div>
+
+      <div className="space-y-3">
         <Button
           variant="outline"
-          className="w-full text-red-500 hover:bg-red-50 hover:text-red-600"
+          className="w-full rounded-xl border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600"
           onClick={() => signOut({ callbackUrl: "/tester/login" })}
         >
           <LogOut className="mr-2 h-4 w-4" />
@@ -105,7 +110,7 @@ export default function TesterSettingsPage() {
         </Button>
         <Button
           variant="ghost"
-          className="w-full text-slate-400 hover:text-red-500"
+          className="w-full rounded-xl text-slate-400 hover:text-red-500"
           onClick={() => setShowDeleteConfirm(true)}
         >
           <Trash2 className="mr-2 h-4 w-4" />
@@ -142,30 +147,36 @@ export default function TesterSettingsPage() {
       </AlertDialog>
 
       <Sheet open={showUserInfo} onOpenChange={setShowUserInfo}>
-        <SheetContent side="bottom" className="rounded-t-2xl">
+        <SheetContent side="bottom" className="rounded-t-[1.5rem] border-t-0">
           <SheetHeader>
-            <SheetTitle>내 정보</SheetTitle>
+            <SheetTitle className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">내 정보</SheetTitle>
           </SheetHeader>
           <div className="mt-6 space-y-4">
-            <div className="flex items-center gap-3 rounded-lg bg-slate-50 p-4">
-              <UserCircle className="h-6 w-6 text-slate-400" />
+            <div className="flex items-center gap-3 rounded-xl bg-gradient-to-br from-slate-50 to-blue-50/50 p-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100">
+                <UserCircle className="h-5 w-5 text-blue-600" />
+              </div>
               <div>
-                <p className="text-sm text-slate-500">닉네임</p>
-                <p className="font-medium text-slate-900">{userInfo?.profileName || "미설정"}</p>
+                <p className="text-sm font-medium text-slate-500">닉네임</p>
+                <p className="font-semibold text-slate-800">{userInfo?.profileName || "미설정"}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 rounded-lg bg-slate-50 p-4">
-              <Mail className="h-6 w-6 text-slate-400" />
+            <div className="flex items-center gap-3 rounded-xl bg-gradient-to-br from-slate-50 to-blue-50/50 p-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100">
+                <Mail className="h-5 w-5 text-blue-600" />
+              </div>
               <div>
-                <p className="text-sm text-slate-500">이메일</p>
-                <p className="font-medium text-slate-900">{userInfo?.email || "미설정"}</p>
+                <p className="text-sm font-medium text-slate-500">이메일</p>
+                <p className="font-semibold text-slate-800">{userInfo?.email || "미설정"}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 rounded-lg bg-slate-50 p-4">
-              <Link2 className="h-6 w-6 text-slate-400" />
+            <div className="flex items-center gap-3 rounded-xl bg-gradient-to-br from-slate-50 to-blue-50/50 p-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100">
+                <Link2 className="h-5 w-5 text-blue-600" />
+              </div>
               <div>
-                <p className="text-sm text-slate-500">연결된 계정</p>
-                <p className="font-medium text-slate-900">
+                <p className="text-sm font-medium text-slate-500">연결된 계정</p>
+                <p className="font-semibold text-slate-800">
                   {userInfo?.provider ? PROVIDER_LABEL[userInfo.provider] : "미설정"}
                 </p>
               </div>
@@ -188,12 +199,14 @@ function SettingsItem({
 }) {
   return (
     <button
-      className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-slate-50"
+      className="flex w-full items-center justify-between px-4 py-4 text-left transition-colors hover:bg-blue-50/50"
       onClick={onClick}
     >
       <div className="flex items-center gap-3">
-        <span className="text-slate-400">{icon}</span>
-        <span className="font-medium text-slate-700">{label}</span>
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100">
+          <span className="text-blue-600">{icon}</span>
+        </div>
+        <span className="font-semibold text-slate-700">{label}</span>
       </div>
       <ChevronRight className="h-5 w-5 text-slate-300" />
     </button>

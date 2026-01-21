@@ -202,15 +202,15 @@ export default function CampaignSubmitPage() {
       transition={{ duration: 0.3 }}
       className="flex min-h-screen flex-col pb-24"
     >
-      <div className="sticky top-14 z-40 border-b border-slate-100 bg-white/80 backdrop-blur-lg">
+      <div className="sticky top-14 z-40 border-b border-white/50 bg-white/70 backdrop-blur-xl">
         <div className="flex h-12 items-center gap-3 px-5">
           <button
             onClick={handleBack}
-            className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-slate-100"
+            className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 shadow-sm transition-all hover:shadow-md hover:scale-105"
           >
             <ArrowLeft className="h-5 w-5 text-slate-700" />
           </button>
-          <span className="text-base font-semibold text-slate-900">참여 제출</span>
+          <span className="text-base font-bold text-slate-800">참여 제출</span>
         </div>
 
         <div className="px-5 pb-4">
@@ -218,7 +218,7 @@ export default function CampaignSubmitPage() {
         </div>
       </div>
 
-      <div className="flex-1 bg-slate-50 p-5">
+      <div className="flex-1 p-5">
         <AnimatePresence mode="wait">
           {requiresImages && currentStep === 1 && (
             <StepWrapper key="step-images">
@@ -257,14 +257,14 @@ export default function CampaignSubmitPage() {
         </AnimatePresence>
       </div>
 
-      <div className="pb-safe fixed right-0 bottom-16 left-0 border-t border-slate-100 bg-white p-4">
+      <div className="pb-safe fixed right-0 bottom-16 left-0 border-t border-white/50 bg-white/80 p-4 backdrop-blur-xl">
         <div className="mx-auto max-w-md">
           {currentStep < totalSteps ? (
             <motion.button
               whileTap={{ scale: 0.96 }}
               onClick={handleNext}
               disabled={!canProceedFromStep(currentStep)}
-              className="bg-primary flex h-[52px] w-full items-center justify-center gap-2 rounded-xl text-base font-semibold text-white transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/30 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
             >
               다음
               <ChevronRight className="h-5 w-5" />
@@ -274,7 +274,7 @@ export default function CampaignSubmitPage() {
               whileTap={{ scale: 0.96 }}
               onClick={handleSubmit}
               disabled={!canProceedFromStep(totalSteps) || isSubmitting}
-              className="bg-primary flex h-[52px] w-full items-center justify-center gap-2 rounded-xl text-base font-semibold text-white transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/30 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
             >
               {isSubmitting ? (
                 <>
@@ -305,19 +305,19 @@ function ProgressIndicator({
         <div key={step.id} className="flex flex-1 items-center">
           <div className="flex flex-1 items-center gap-2">
             <div
-              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
+              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold shadow-sm transition-all ${
                 index + 1 < currentStep
-                  ? "bg-secondary text-white"
+                  ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white"
                   : index + 1 === currentStep
-                    ? "bg-primary text-white"
+                    ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-200"
                     : "bg-slate-100 text-slate-400"
               }`}
             >
               {index + 1 < currentStep ? <Check className="h-4 w-4" /> : index + 1}
             </div>
             <span
-              className={`text-xs font-medium transition-colors ${
-                index + 1 === currentStep ? "text-slate-900" : "text-slate-400"
+              className={`text-xs font-semibold transition-colors ${
+                index + 1 === currentStep ? "text-slate-800" : "text-slate-400"
               }`}
             >
               {step.label}
@@ -326,7 +326,7 @@ function ProgressIndicator({
           {index < steps.length - 1 && (
             <div
               className={`mx-2 h-0.5 flex-1 rounded-full transition-colors ${
-                index + 1 < currentStep ? "bg-secondary" : "bg-slate-100"
+                index + 1 < currentStep ? "bg-gradient-to-r from-emerald-500 to-cyan-500" : "bg-slate-100"
               }`}
             />
           )}
@@ -367,9 +367,9 @@ function StepImages({
   onUpload: (slot: 1 | 2, key: string) => void;
 }) {
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-sm">
+    <div className="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
       <div className="mb-5">
-        <h2 className="mb-2 text-lg font-semibold text-slate-900">스크린샷 업로드</h2>
+        <h2 className="mb-2 text-lg font-bold text-slate-800">스크린샷 업로드</h2>
         <p className="text-sm text-slate-500">광고주가 요청한 화면을 캡처해주세요.</p>
       </div>
 
@@ -491,9 +491,11 @@ function ImageUpload({
 
   return (
     <div className="space-y-2">
-      <label className="hover:border-primary/50 flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-100 transition-colors hover:bg-slate-200">
-        <Camera className="mb-2 h-8 w-8 text-slate-300" />
-        <span className="text-sm text-slate-500">캡처 {slot}</span>
+      <label className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-blue-200 bg-gradient-to-br from-blue-50/50 to-cyan-50/50 transition-all hover:border-blue-400 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100 mb-2">
+          <Camera className="h-6 w-6 text-blue-500" />
+        </div>
+        <span className="text-sm font-medium text-slate-500">캡처 {slot}</span>
         <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
       </label>
       {mission && <p className="line-clamp-2 px-1 text-center text-xs text-slate-600">{mission}</p>}
@@ -513,9 +515,9 @@ function StepQuestions({
   onChange: (field: "answer1" | "answer2", value: string) => void;
 }) {
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-sm">
+    <div className="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
       <div className="mb-5">
-        <h2 className="mb-2 text-lg font-semibold text-slate-900">질문에 답해주세요</h2>
+        <h2 className="mb-2 text-lg font-bold text-slate-800">질문에 답해주세요</h2>
         <p className="text-sm text-slate-500">앱 사용 경험을 바탕으로 솔직하게 답변해주세요.</p>
       </div>
 
@@ -523,16 +525,16 @@ function StepQuestions({
         {questions.map((q, idx) => (
           <div key={q.order} className="space-y-3">
             <div className="flex items-start gap-3">
-              <span className="bg-primary flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-xs font-bold text-white shadow-md shadow-blue-200">
                 {q.order}
               </span>
-              <p className="text-sm font-medium text-slate-900">{q.text}</p>
+              <p className="text-sm font-semibold text-slate-800">{q.text}</p>
             </div>
             <textarea
               value={idx === 0 ? answer1 : answer2}
               onChange={(e) => onChange(idx === 0 ? "answer1" : "answer2", e.target.value)}
               placeholder="답변을 입력해주세요..."
-              className="focus:ring-primary/20 min-h-[100px] w-full resize-none rounded-xl bg-slate-100 p-4 text-base text-slate-900 transition-shadow placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+              className="min-h-[100px] w-full resize-none rounded-xl bg-gradient-to-br from-slate-50 to-blue-50/50 p-4 text-base text-slate-800 transition-shadow placeholder:text-slate-400 focus:ring-2 focus:ring-blue-200 focus:outline-none"
             />
           </div>
         ))}
@@ -555,9 +557,9 @@ function StepFeedback({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl bg-white p-5 shadow-sm">
+      <div className="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
         <div className="mb-5">
-          <h2 className="mb-2 text-lg font-semibold text-slate-900">자유 의견</h2>
+          <h2 className="mb-2 text-lg font-bold text-slate-800">자유 의견</h2>
           <p className="text-sm text-slate-500">
             앱에 대한 솔직한 의견을 {MIN_FEEDBACK_LENGTH}자 이상 작성해주세요.
           </p>
@@ -568,11 +570,11 @@ function StepFeedback({
             value={feedback}
             onChange={(e) => onChange(e.target.value)}
             placeholder="앱 사용 후 느낀 점, 개선 아이디어, 좋았던 점 등을 자유롭게 적어주세요..."
-            className="focus:ring-primary/20 min-h-[180px] w-full resize-none rounded-xl bg-slate-100 p-4 text-base text-slate-900 transition-shadow placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+            className="min-h-[180px] w-full resize-none rounded-xl bg-gradient-to-br from-slate-50 to-blue-50/50 p-4 text-base text-slate-800 transition-shadow placeholder:text-slate-400 focus:ring-2 focus:ring-blue-200 focus:outline-none"
           />
           <div className="flex justify-end">
             <span
-              className={`text-xs font-medium tabular-nums ${
+              className={`text-xs font-semibold tabular-nums ${
                 isValid ? "text-emerald-600" : "text-slate-400"
               }`}
             >
@@ -582,10 +584,10 @@ function StepFeedback({
         </div>
       </div>
 
-      <div className="bg-secondary/10 rounded-2xl p-4">
-        <p className="text-secondary text-sm font-medium">
+      <div className="rounded-[1.25rem] bg-gradient-to-r from-blue-50 to-cyan-50 p-4 shadow-sm">
+        <p className="text-sm font-medium text-blue-700">
           제출 완료 시{" "}
-          <span className="font-bold tabular-nums">{rewardAmount.toLocaleString()}P</span>를 받을 수
+          <span className="font-bold tabular-nums bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">{rewardAmount.toLocaleString()}P</span>를 받을 수
           있어요!
         </p>
       </div>

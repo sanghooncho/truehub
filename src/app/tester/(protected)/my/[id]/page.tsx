@@ -141,43 +141,47 @@ export default function ParticipationDetailPage() {
 
   return (
     <div className="animate-fade-in-up pb-8">
-      <header className="sticky top-14 z-40 -mx-5 border-b border-slate-100 bg-white/80 px-5 py-3 backdrop-blur-lg">
+      <header className="sticky top-14 z-40 -mx-5 border-b border-white/50 bg-white/70 px-5 py-3 backdrop-blur-xl">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-sm text-slate-600"
+          className="flex items-center gap-2 text-sm font-medium text-slate-600"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-slate-100 to-slate-50 shadow-sm">
+            <ArrowLeft className="h-4 w-4" />
+          </div>
           뒤로가기
         </button>
       </header>
 
       <div className="space-y-6 p-5">
         <div>
-          <Badge className={cn("mb-3 gap-1 border", statusConfig.className)}>
+          <Badge className={cn("mb-3 gap-1 border rounded-full px-3", statusConfig.className)}>
             {statusConfig.icon}
             {statusConfig.label}
           </Badge>
-          <h1 className="text-xl font-bold text-slate-900">{data.campaign.title}</h1>
-          <p className="mt-1 text-sm text-slate-500">{data.campaign.advertiserName}</p>
+          <h1 className="text-xl font-bold text-slate-800">{data.campaign.title}</h1>
+          <p className="mt-1 text-sm font-medium text-slate-500">{data.campaign.advertiserName}</p>
         </div>
 
         {data.status === "REJECTED" && data.rejectReason && (
-          <Card className="border-red-200 bg-red-50 p-4">
+          <div className="rounded-[1.25rem] border border-red-200 bg-gradient-to-r from-red-50 to-rose-50 p-4">
             <div className="flex gap-3">
-              <AlertCircle className="h-5 w-5 shrink-0 text-red-500" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-red-100 shrink-0">
+                <AlertCircle className="h-5 w-5 text-red-500" />
+              </div>
               <div>
-                <p className="font-medium text-red-700">반려 사유</p>
+                <p className="font-semibold text-red-700">반려 사유</p>
                 <p className="mt-1 text-sm text-red-600">{data.rejectReason}</p>
               </div>
             </div>
-          </Card>
+          </div>
         )}
 
-        <Card className="p-4">
-          <h2 className="mb-3 font-semibold text-slate-900">리워드</h2>
+        <div className="rounded-[1.25rem] border border-white/50 bg-white/80 p-4 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
+          <h2 className="mb-3 font-bold text-slate-800">리워드</h2>
           <div className="flex items-center justify-between">
             <span className="text-slate-600">금액</span>
-            <span className="text-secondary text-xl font-bold tabular-nums">
+            <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-xl font-bold tabular-nums text-transparent">
               {data.campaign.rewardAmount.toLocaleString()}P
             </span>
           </div>
@@ -186,7 +190,7 @@ export default function ParticipationDetailPage() {
               <span className="text-slate-600">지급 상태</span>
               <span
                 className={cn(
-                  "text-sm font-medium",
+                  "text-sm font-semibold",
                   data.reward.status === "SENT"
                     ? "text-emerald-600"
                     : data.reward.status === "FAILED"
@@ -202,10 +206,10 @@ export default function ParticipationDetailPage() {
               </span>
             </div>
           )}
-        </Card>
+        </div>
 
-        <Card className="p-4">
-          <h2 className="mb-3 font-semibold text-slate-900">타임라인</h2>
+        <div className="rounded-[1.25rem] border border-white/50 bg-white/80 p-4 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
+          <h2 className="mb-3 font-bold text-slate-800">타임라인</h2>
           <div className="space-y-3">
             <TimelineItem label="제출" date={data.submittedAt} isCompleted />
             {data.reviewedAt && (
@@ -219,16 +223,16 @@ export default function ParticipationDetailPage() {
               <TimelineItem label="리워드 지급" date={data.reward.sentAt} isCompleted />
             )}
           </div>
-        </Card>
+        </div>
 
         {data.assets.length > 0 && (
-          <Card className="p-4">
-            <h2 className="mb-3 font-semibold text-slate-900">제출한 스크린샷</h2>
+          <div className="rounded-[1.25rem] border border-white/50 bg-white/80 p-4 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
+            <h2 className="mb-3 font-bold text-slate-800">제출한 스크린샷</h2>
             <div className="grid grid-cols-2 gap-3">
               {data.assets.map((asset) => (
                 <div
                   key={asset.id}
-                  className="relative aspect-[9/16] overflow-hidden rounded-lg bg-slate-100"
+                  className="relative aspect-[9/16] overflow-hidden rounded-xl bg-gradient-to-br from-slate-100 to-slate-50"
                 >
                   {asset.url ? (
                     <Image
@@ -245,28 +249,28 @@ export default function ParticipationDetailPage() {
                 </div>
               ))}
             </div>
-          </Card>
+          </div>
         )}
 
-        <Card className="p-4">
-          <h2 className="mb-3 font-semibold text-slate-900">제출한 답변</h2>
+        <div className="rounded-[1.25rem] border border-white/50 bg-white/80 p-4 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
+          <h2 className="mb-3 font-bold text-slate-800">제출한 답변</h2>
           <div className="space-y-4">
             {data.campaign.questions.map((q, idx) => (
               <div key={q.order}>
-                <p className="text-sm font-medium text-slate-700">{q.text}</p>
-                <p className="mt-1 rounded-lg bg-slate-50 p-3 text-sm text-slate-600">
+                <p className="text-sm font-semibold text-slate-700">{q.text}</p>
+                <p className="mt-1 rounded-xl bg-gradient-to-br from-slate-50 to-blue-50/50 p-3 text-sm text-slate-600">
                   {idx === 0 ? data.answers.answer1 : data.answers.answer2}
                 </p>
               </div>
             ))}
             <div>
-              <p className="text-sm font-medium text-slate-700">추가 피드백</p>
-              <p className="mt-1 rounded-lg bg-slate-50 p-3 text-sm text-slate-600">
+              <p className="text-sm font-semibold text-slate-700">추가 피드백</p>
+              <p className="mt-1 rounded-xl bg-gradient-to-br from-slate-50 to-blue-50/50 p-3 text-sm text-slate-600">
                 {data.answers.feedback || "없음"}
               </p>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );
@@ -285,8 +289,8 @@ function TimelineItem({
     <div className="flex items-center gap-3">
       <div
         className={cn(
-          "flex h-6 w-6 items-center justify-center rounded-full",
-          isCompleted ? "bg-emerald-100" : "bg-slate-100"
+          "flex h-7 w-7 items-center justify-center rounded-xl shadow-sm",
+          isCompleted ? "bg-gradient-to-br from-emerald-100 to-cyan-100" : "bg-slate-100"
         )}
       >
         {isCompleted ? (
@@ -296,7 +300,7 @@ function TimelineItem({
         )}
       </div>
       <div className="flex-1">
-        <p className="text-sm font-medium text-slate-900">{label}</p>
+        <p className="text-sm font-semibold text-slate-800">{label}</p>
         <p className="text-xs text-slate-500">
           {format(new Date(date), "yyyy.MM.dd HH:mm", { locale: ko })}
         </p>
