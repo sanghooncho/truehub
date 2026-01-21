@@ -44,8 +44,24 @@ export async function POST(request: NextRequest) {
 
     const { paymentId, amount } = validation.data;
 
-    // PortOne V2 API로 결제 검증
+    // PortOne V2 API로 결제 검증 (필수)
     const storeId = process.env.NEXT_PUBLIC_PORTONE_STORE_ID;
+    const apiSecret = process.env.PORTONE_API_SECRET;
+
+    // PORTONE_API_SECRET이 없으면 결제 처리 불가 (보안상 필수)
+    if (!apiSecret) {
+      console.error("PORTONE_API_SECRET is not configured - payment verification blocked");
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: "CONFIG_ERROR",
+            message: "결제 시스템이 설정되지 않았습니다. 관리자에게 문의하세요.",
+          },
+        },
+        { status: 500 }
+      );
+    }
 
     // PortOne V2 결제 조회 API 호출
     const portoneResponse = await fetch(
@@ -53,18 +69,13 @@ export async function POST(request: NextRequest) {
       {
         method: "GET",
         headers: {
-          "Authorization": `PortOne ${process.env.PORTONE_API_SECRET || ""}`,
+          Authorization: `PortOne ${apiSecret}`,
           "Content-Type": "application/json",
         },
       }
     );
 
-    // 테스트 모드에서는 API Secret이 없을 수 있으므로 클라이언트 측 검증만 수행
-    // 실제 운영 시에는 PORTONE_API_SECRET 환경변수를 설정해야 함
-    if (!process.env.PORTONE_API_SECRET) {
-      console.warn("PORTONE_API_SECRET not set - skipping server-side verification");
-      // 테스트 모드에서는 클라이언트 응답을 신뢰
-    } else if (!portoneResponse.ok) {
+    if (!portoneResponse.ok) {
       console.error("PortOne API error:", await portoneResponse.text());
       return NextResponse.json(
         {
@@ -76,50 +87,50 @@ export async function POST(request: NextRequest) {
         },
         { status: 400 }
       );
-    } else {
-      const paymentData = await portoneResponse.json();
+    }
 
-      // 결제 상태 검증
-      if (paymentData.status !== "PAID") {
-        return NextResponse.json(
-          {
-            success: false,
-            error: {
-              code: "PAYMENT_NOT_COMPLETED",
-              message: "결제가 완료되지 않았습니다",
-            },
-          },
-          { status: 400 }
-        );
-      }
+    const paymentData = await portoneResponse.json();
 
-      // 금액 검증
-      if (paymentData.amount.total !== amount) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: {
-              code: "AMOUNT_MISMATCH",
-              message: "결제 금액이 일치하지 않습니다",
-            },
+    // 결제 상태 검증
+    if (paymentData.status !== "PAID") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: "PAYMENT_NOT_COMPLETED",
+            message: "결제가 완료되지 않았습니다",
           },
-          { status: 400 }
-        );
-      }
+        },
+        { status: 400 }
+      );
+    }
 
-      // Store ID 검증
-      if (paymentData.storeId !== storeId) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: {
-              code: "STORE_MISMATCH",
-              message: "잘못된 결제 정보입니다",
-            },
+    // 금액 검증
+    if (paymentData.amount.total !== amount) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: "AMOUNT_MISMATCH",
+            message: "결제 금액이 일치하지 않습니다",
           },
-          { status: 400 }
-        );
-      }
+        },
+        { status: 400 }
+      );
+    }
+
+    // Store ID 검증
+    if (paymentData.storeId !== storeId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: "STORE_MISMATCH",
+            message: "잘못된 결제 정보입니다",
+          },
+        },
+        { status: 400 }
+      );
     }
 
     // 중복 처리 방지 - 같은 paymentId로 이미 처리된 건인지 확인

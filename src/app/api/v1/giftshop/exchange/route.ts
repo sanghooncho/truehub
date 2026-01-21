@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/infra/db/prisma";
+import { Prisma } from "@prisma/client";
 import { getGiftishowClient, getGiftishowErrorMessage, GiftishowClient } from "@/lib/giftishow";
 
 export async function POST(request: NextRequest) {
@@ -68,61 +69,78 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userRewards = await prisma.reward.aggregate({
-      where: {
-        userId,
-        status: "SENT",
-      },
-      _sum: {
-        amount: true,
-      },
-    });
-
-    const usedPoints = await prisma.giftExchange.aggregate({
-      where: {
-        userId,
-        status: { in: ["COMPLETED", "PROCESSING", "PENDING"] },
-      },
-      _sum: {
-        pointsUsed: true,
-      },
-    });
-
-    const totalEarned = userRewards._sum.amount || 0;
-    const totalUsed = usedPoints._sum.pointsUsed || 0;
-    const availablePoints = totalEarned - totalUsed;
-
-    if (availablePoints < goods.discountPrice) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: "INSUFFICIENT_POINTS",
-            message: `포인트가 부족합니다. 필요: ${goods.discountPrice.toLocaleString()}P, 보유: ${availablePoints.toLocaleString()}P`,
-          },
-        },
-        { status: 400 }
-      );
-    }
-
     const trId = GiftishowClient.generateTrId();
 
-    const exchange = await prisma.giftExchange.create({
-      data: {
-        userId,
-        goodsCode: goods.goodsCode,
-        goodsName: goods.goodsName,
-        brandName: goods.brandName,
-        goodsImageUrl: goods.goodsImgS,
-        amount: goods.salePrice,
-        discountPrice: goods.discountPrice,
-        pointsUsed: goods.discountPrice,
-        phoneNumber: cleanPhone,
-        trId,
-        status: "PROCESSING",
-        sendMethod: "N",
-      },
-    });
+    // 트랜잭션 + FOR UPDATE 잠금으로 Race Condition 방지
+    type PointResult = { total: bigint | null }[];
+
+    let exchange;
+    let availablePoints: number;
+
+    try {
+      const txResult = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        // FOR UPDATE로 해당 유저의 포인트 관련 레코드 잠금
+        const earnedResult = await tx.$queryRaw<PointResult>`
+          SELECT COALESCE(SUM(amount), 0) as total
+          FROM rewards
+          WHERE user_id = ${userId} AND status = 'SENT'
+          FOR UPDATE
+        `;
+
+        const usedResult = await tx.$queryRaw<PointResult>`
+          SELECT COALESCE(SUM(points_used), 0) as total
+          FROM gift_exchanges
+          WHERE user_id = ${userId} AND status IN ('COMPLETED', 'PROCESSING', 'PENDING')
+          FOR UPDATE
+        `;
+
+        const totalEarned = Number(earnedResult[0]?.total || 0);
+        const totalUsed = Number(usedResult[0]?.total || 0);
+        const points = totalEarned - totalUsed;
+
+        if (points < goods.discountPrice) {
+          throw new Error(`INSUFFICIENT_POINTS:${points}`);
+        }
+
+        // 포인트 검증 통과 후 즉시 레코드 생성 (같은 트랜잭션 내)
+        const newExchange = await tx.giftExchange.create({
+          data: {
+            userId,
+            goodsCode: goods.goodsCode,
+            goodsName: goods.goodsName,
+            brandName: goods.brandName,
+            goodsImageUrl: goods.goodsImgS,
+            amount: goods.salePrice,
+            discountPrice: goods.discountPrice,
+            pointsUsed: goods.discountPrice,
+            phoneNumber: cleanPhone,
+            trId,
+            status: "PROCESSING",
+            sendMethod: "N",
+          },
+        });
+
+        return { exchange: newExchange, availablePoints: points };
+      });
+
+      exchange = txResult.exchange;
+      availablePoints = txResult.availablePoints;
+    } catch (txError) {
+      if (txError instanceof Error && txError.message.startsWith("INSUFFICIENT_POINTS:")) {
+        const currentPoints = parseInt(txError.message.split(":")[1]) || 0;
+        return NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: "INSUFFICIENT_POINTS",
+              message: `포인트가 부족합니다. 필요: ${goods.discountPrice.toLocaleString()}P, 보유: ${currentPoints.toLocaleString()}P`,
+            },
+          },
+          { status: 400 }
+        );
+      }
+      throw txError;
+    }
 
     try {
       const sendResponse = await client.sendCoupon({
