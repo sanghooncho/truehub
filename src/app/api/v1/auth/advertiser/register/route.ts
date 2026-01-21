@@ -41,6 +41,8 @@ export async function POST(request: NextRequest) {
 
     const passwordHash = await bcrypt.hash(data.password, 12);
 
+    const SIGNUP_BONUS_AMOUNT = 10000;
+
     const advertiser = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const newAdvertiser = await tx.advertiser.create({
         data: {
@@ -53,12 +55,23 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      await tx.creditWallet.create({
+      const wallet = await tx.creditWallet.create({
         data: {
           advertiserId: newAdvertiser.id,
-          balance: 0,
-          totalTopup: 0,
+          balance: SIGNUP_BONUS_AMOUNT,
+          totalTopup: SIGNUP_BONUS_AMOUNT,
           totalConsumed: 0,
+        },
+      });
+
+      await tx.creditTransaction.create({
+        data: {
+          walletId: wallet.id,
+          type: "BONUS",
+          amount: SIGNUP_BONUS_AMOUNT,
+          balanceAfter: SIGNUP_BONUS_AMOUNT,
+          refType: "signup_bonus",
+          description: "가입 보너스",
         },
       });
 

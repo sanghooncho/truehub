@@ -42,6 +42,7 @@ enum CreditTxType {
   CONSUME
   REFUND
   ADJUST
+  BONUS
 }
 
 enum TopupStatus {
