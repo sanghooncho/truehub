@@ -377,7 +377,7 @@ export default function LandingPage() {
                 주소: 서울특별시 광진구 군자로12길 46, 102동 501호(군자동, 일성파크아파트)
               </p>
               <p>
-                이메일: previewapp@naver.com
+                전화: 0502-1925-0051 | 이메일: previewapp@naver.com
               </p>
               <p className="pt-4 text-slate-600">&copy; {new Date().getFullYear()} 프리뷰. All rights reserved.</p>
             </div>
