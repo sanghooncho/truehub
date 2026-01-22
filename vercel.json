@@ -3,6 +3,10 @@
     {
       "path": "/api/v1/jobs/run",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/v1/giftshop/sync",
+      "schedule": "0 1 * * *"
     }
   ]
 }

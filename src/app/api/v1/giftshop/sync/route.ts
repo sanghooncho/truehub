@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { syncGiftishowGoods } from "@/lib/jobs/handlers/giftishow-sync";
 
-export async function POST(request: NextRequest) {
+async function handleSync(request: NextRequest) {
   try {
     const authHeader = request.headers.get("authorization");
     const expectedToken = process.env.CRON_SECRET || process.env.JOBS_API_KEY;
 
-    if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
+    if (expectedToken && authHeader !== `Bearer ${expectedToken}`) {
       return NextResponse.json(
         { success: false, error: { code: "UNAUTHORIZED", message: "Invalid authorization" } },
         { status: 401 }
@@ -32,4 +32,12 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function POST(request: NextRequest) {
+  return handleSync(request);
+}
+
+export async function GET(request: NextRequest) {
+  return handleSync(request);
 }
