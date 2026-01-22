@@ -340,13 +340,29 @@ export default function TopupPage() {
           <CardDescription>앱 테스터 모집 캠페인 운영을 위한 디지털 상품</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="rounded-lg bg-slate-50 p-4">
-            <p className="text-sm text-slate-500">판매 가격</p>
-            <p className="text-xl font-bold text-slate-900">10,000원 ~ 10,000,000원</p>
-            <p className="text-xs text-slate-500 mt-1">원하는 금액을 자유롭게 선택</p>
+          <div className="text-sm text-slate-700">
+            <p className="mb-3">TrueHub 크레딧은 앱 테스터 모집 캠페인을 운영하기 위한 디지털 화폐입니다.</p>
+            <ul className="space-y-2">
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                캠페인 생성 및 테스터 모집에 사용
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                테스터 참여 승인 시 리워드 금액만큼 차감
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                AI 기반 피드백 분석 리포트 제공
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                어뷰징 자동 탐지로 신뢰성 있는 리뷰 수집
+              </li>
+            </ul>
           </div>
 
-          <div className="space-y-3 text-sm">
+          <div className="border-t pt-4 space-y-3 text-sm">
             <div className="flex items-start gap-3">
               <Zap className="h-5 w-5 text-amber-500 mt-0.5" />
               <div>
