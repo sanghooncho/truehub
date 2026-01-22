@@ -121,6 +121,11 @@ export default function TopupPage() {
       return;
     }
 
+    if (method === "CARD") {
+      alert("현재 카드사 심사중입니다");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
