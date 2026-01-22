@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ChevronLeft, Loader2, Copy, Check, CreditCard } from "lucide-react";
+import { ChevronLeft, Loader2, Copy, Check, CreditCard, Zap, Clock, AlertCircle } from "lucide-react";
 
 interface TopupResult {
   id: string;
@@ -330,6 +330,47 @@ export default function TopupPage() {
               )}
             </Button>
           </form>
+        </CardContent>
+      </Card>
+
+      {/* 상품 정보 */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="text-base">상품 정보</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 text-sm">
+          <div className="flex items-start gap-3">
+            <Zap className="h-5 w-5 text-amber-500 mt-0.5" />
+            <div>
+              <p className="font-medium text-slate-900">즉시 충전</p>
+              <p className="text-slate-500">결제 완료 즉시 크레딧이 계정에 충전됩니다.</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <Clock className="h-5 w-5 text-blue-500 mt-0.5" />
+            <div>
+              <p className="font-medium text-slate-900">유효기간 1년</p>
+              <p className="text-slate-500">충전일로부터 365일간 사용 가능합니다.</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 환불 규정 */}
+      <Card className="mt-4">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 text-amber-500" />
+            환불 규정
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-slate-600 space-y-2">
+          <p>• 충전 후 7일 이내, 미사용 크레딧 전액 환불 가능</p>
+          <p>• 이미 캠페인에 사용된 크레딧은 환불 불가</p>
+          <p>• 환불 요청: previewapp@naver.com</p>
+          <Link href="/policy/refund" className="text-blue-600 hover:underline inline-block mt-2">
+            환불 정책 자세히 보기 →
+          </Link>
         </CardContent>
       </Card>
     </div>
