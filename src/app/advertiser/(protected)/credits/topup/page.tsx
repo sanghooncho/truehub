@@ -129,26 +129,22 @@ export default function TopupPage() {
     setIsLoading(true);
 
     try {
-      if (method === "CARD") {
-        await handleCardPayment(numAmount);
-      } else {
-        // 무통장 입금
-        const res = await fetch("/api/v1/advertiser/topups", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amount: numAmount, method }),
-        });
+      // 무통장 입금
+      const res = await fetch("/api/v1/advertiser/topups", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: numAmount, method }),
+      });
 
-        const data = await res.json();
+      const data = await res.json();
 
-        if (!res.ok) {
-          toast.error(data.error?.message || "충전 요청에 실패했습니다");
-          return;
-        }
-
-        setResult(data.data);
-        toast.success("충전 요청이 생성되었습니다");
+      if (!res.ok) {
+        toast.error(data.error?.message || "충전 요청에 실패했습니다");
+        return;
       }
+
+      setResult(data.data);
+      toast.success("충전 요청이 생성되었습니다");
     } catch {
       toast.error("오류가 발생했습니다");
     } finally {
