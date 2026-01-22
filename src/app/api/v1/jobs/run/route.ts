@@ -54,20 +54,24 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const result = await runJobBatch(50);
     const stats = await getJobStats();
 
     return NextResponse.json({
       success: true,
-      data: { stats },
+      data: {
+        ...result,
+        stats,
+      },
     });
   } catch (error) {
-    console.error("Job stats error:", error);
+    console.error("Job runner error:", error);
     return NextResponse.json(
       {
         success: false,
         error: {
           code: "INTERNAL_ERROR",
-          message: "Failed to get job stats",
+          message: error instanceof Error ? error.message : "Failed to run jobs",
         },
       },
       { status: 500 }
