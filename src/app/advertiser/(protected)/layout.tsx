@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LayoutDashboard, Megaphone, CreditCard, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Megaphone, CreditCard, Settings } from "lucide-react";
 import { getAdvertiserSession } from "@/lib/advertiser-auth";
+import { LogoutButton } from "@/components/advertiser/logout-button";
 
 export default async function AdvertiserLayout({ children }: { children: React.ReactNode }) {
   const session = await getAdvertiserSession();
@@ -43,10 +44,7 @@ export default async function AdvertiserLayout({ children }: { children: React.R
             />
           </nav>
           <div className="absolute right-0 bottom-0 left-0 border-t border-slate-100 p-4">
-            <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-900">
-              <LogOut className="h-5 w-5" />
-              <span>로그아웃</span>
-            </button>
+            <LogoutButton />
           </div>
         </aside>
         <main className="flex-1 lg:ml-64">
