@@ -122,12 +122,7 @@ export default function TopupPage() {
     }
 
     if (method === "CARD") {
-      setIsLoading(true);
-      try {
-        await handleCardPayment(numAmount);
-      } finally {
-        setIsLoading(false);
-      }
+      alert("현재 카드사 심사중입니다");
       return;
     }
 
