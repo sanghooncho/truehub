@@ -6,6 +6,7 @@ import {
   ClipboardCheck,
   Gift,
   CreditCard,
+  Ticket,
   Megaphone,
   Users,
   Building2,
@@ -60,6 +61,11 @@ export default async function AdminProtectedLayout({ children }: { children: Rea
               href="/admin/topups"
               icon={<CreditCard className="h-5 w-5" />}
               label="충전 승인"
+            />
+            <SidebarItem
+              href="/admin/promo-codes"
+              icon={<Ticket className="h-5 w-5" />}
+              label="프로모 코드"
             />
 
             <div className="mt-4 mb-2 px-3 text-xs font-medium tracking-wider text-slate-400 uppercase">

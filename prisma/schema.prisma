@@ -135,9 +135,10 @@ model Advertiser {
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
-  campaigns     Campaign[]
-  creditWallet  CreditWallet?
-  topupRequests TopupRequest[]
+  campaigns        Campaign[]
+  creditWallet     CreditWallet?
+  topupRequests    TopupRequest[]
+  promoRedemptions PromoRedemption[]
 
   @@map("advertisers")
 }
@@ -475,6 +476,37 @@ model GiftExchange {
   @@index([status])
   @@index([trId])
   @@map("gift_exchanges")
+}
+
+model PromoCode {
+  id          String    @id @default(uuid())
+  code        String    @unique
+  amount      Int
+  maxUses     Int       @map("max_uses")
+  currentUses Int       @default(0) @map("current_uses")
+  isActive    Boolean   @default(true) @map("is_active")
+  description String?
+  expiresAt   DateTime? @map("expires_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  redemptions PromoRedemption[]
+
+  @@map("promo_codes")
+}
+
+model PromoRedemption {
+  id           String   @id @default(uuid())
+  promoCodeId  String   @map("promo_code_id")
+  advertiserId String   @map("advertiser_id")
+  redeemedAt   DateTime @default(now()) @map("redeemed_at")
+
+  promoCode  PromoCode  @relation(fields: [promoCodeId], references: [id])
+  advertiser Advertiser @relation(fields: [advertiserId], references: [id])
+
+  @@unique([promoCodeId, advertiserId])
+  @@index([advertiserId])
+  @@map("promo_redemptions")
 }
 
 model GiftishowGoods {

@@ -5,21 +5,27 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 
 const registerSchema = z.object({
-  email: z.string().email("Invalid email format"),
+  email: z.string().email("올바른 이메일 형식이 아닙니다"),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number"),
-  companyName: z.string().min(2, "Company name must be at least 2 characters").max(100),
+    .min(8, "비밀번호는 8자 이상이어야 합니다")
+    .regex(/[A-Z]/, "비밀번호에 대문자를 포함해주세요")
+    .regex(/[0-9]/, "비밀번호에 숫자를 포함해주세요"),
+  companyName: z.string().min(2, "회사명은 2자 이상이어야 합니다").max(100, "회사명이 너무 깁니다"),
   businessType: z.enum(["INDIVIDUAL", "SOLE_PROPRIETOR", "CORPORATION"]).optional(),
   contactName: z.string().max(50).optional(),
   contactPhone: z.string().max(20).optional(),
+  promoCode: z.string().max(50).optional(),
 });
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+
+    if (body.promoCode === "") delete body.promoCode;
+    if (body.contactName === "") delete body.contactName;
+    if (body.contactPhone === "") delete body.contactPhone;
+
     const data = registerSchema.parse(body);
 
     const existingAdvertiser = await prisma.advertiser.findUnique({
@@ -39,9 +45,58 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const passwordHash = await bcrypt.hash(data.password, 12);
+    let promoCode = null;
+    if (data.promoCode) {
+      promoCode = await prisma.promoCode.findUnique({
+        where: { code: data.promoCode.toUpperCase() },
+      });
 
-    const SIGNUP_BONUS_AMOUNT = 10000;
+      if (!promoCode) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: { code: "INVALID_PROMO_CODE", message: "Invalid promo code" },
+          },
+          { status: 400 }
+        );
+      }
+
+      if (!promoCode.isActive) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: { code: "INVALID_PROMO_CODE", message: "This promo code is no longer active" },
+          },
+          { status: 400 }
+        );
+      }
+
+      if (promoCode.expiresAt && new Date() > promoCode.expiresAt) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: { code: "PROMO_CODE_EXPIRED", message: "This promo code has expired" },
+          },
+          { status: 400 }
+        );
+      }
+
+      if (promoCode.currentUses >= promoCode.maxUses) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: "PROMO_CODE_EXHAUSTED",
+              message: "This promo code has reached its usage limit",
+            },
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    const passwordHash = await bcrypt.hash(data.password, 12);
+    const bonusAmount = promoCode?.amount ?? 0;
 
     const advertiser = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const newAdvertiser = await tx.advertiser.create({
@@ -58,22 +113,37 @@ export async function POST(request: NextRequest) {
       const wallet = await tx.creditWallet.create({
         data: {
           advertiserId: newAdvertiser.id,
-          balance: SIGNUP_BONUS_AMOUNT,
-          totalTopup: SIGNUP_BONUS_AMOUNT,
+          balance: bonusAmount,
+          totalTopup: bonusAmount,
           totalConsumed: 0,
         },
       });
 
-      await tx.creditTransaction.create({
-        data: {
-          walletId: wallet.id,
-          type: "BONUS",
-          amount: SIGNUP_BONUS_AMOUNT,
-          balanceAfter: SIGNUP_BONUS_AMOUNT,
-          refType: "signup_bonus",
-          description: "가입 보너스",
-        },
-      });
+      if (promoCode && bonusAmount > 0) {
+        await tx.creditTransaction.create({
+          data: {
+            walletId: wallet.id,
+            type: "BONUS",
+            amount: bonusAmount,
+            balanceAfter: bonusAmount,
+            refType: "promo_code",
+            refId: promoCode.id,
+            description: `프로모 코드 보너스 (${promoCode.code})`,
+          },
+        });
+
+        await tx.promoCode.update({
+          where: { id: promoCode.id },
+          data: { currentUses: { increment: 1 } },
+        });
+
+        await tx.promoRedemption.create({
+          data: {
+            promoCodeId: promoCode.id,
+            advertiserId: newAdvertiser.id,
+          },
+        });
+      }
 
       return newAdvertiser;
     });
@@ -84,7 +154,11 @@ export async function POST(request: NextRequest) {
         id: advertiser.id,
         email: advertiser.email,
         companyName: advertiser.companyName,
-        message: "Registration successful. Please login.",
+        bonusAmount,
+        message:
+          bonusAmount > 0
+            ? `Registration successful. ${bonusAmount.toLocaleString()}원 bonus credited!`
+            : "Registration successful. Please login.",
       },
     });
   } catch (error) {
