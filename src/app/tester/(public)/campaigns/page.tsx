@@ -80,10 +80,10 @@ export default async function CampaignsPage() {
           <br />
           포인트로 기프티콘 교환
         </h1>
-        <p className="relative text-sm leading-relaxed text-blue-100">
+        <p className="relative text-sm leading-relaxed text-white/90">
           🎁 가입만 해도 1,000P! 리뷰 하나면 커피 한잔 무료 ☕
           <br />
-          스타벅스, 편의점 기프티콘으로 <strong className="text-white">즉시 교환</strong> 가능!
+          스타벅스, 편의점 기프티콘으로 <strong className="font-bold">즉시 교환</strong> 가능!
         </p>
 
         {/* 키워드 태그 */}
