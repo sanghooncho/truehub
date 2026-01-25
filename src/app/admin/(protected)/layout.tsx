@@ -65,7 +65,7 @@ export default async function AdminProtectedLayout({ children }: { children: Rea
             <SidebarItem
               href="/admin/promo-codes"
               icon={<Ticket className="h-5 w-5" />}
-              label="프로모 코드"
+              label="프로모션 코드"
             />
 
             <div className="mt-4 mb-2 px-3 text-xs font-medium tracking-wider text-slate-400 uppercase">

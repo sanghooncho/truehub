@@ -119,7 +119,7 @@ export default function AdminPromoCodesPage() {
         return;
       }
 
-      toast.success(`프로모 코드 ${data.data.code}가 생성되었습니다`);
+      toast.success(`프로모션 코드 ${data.data.code}가 생성되었습니다`);
       setCreateDialogOpen(false);
       resetForm();
       fetchData();
@@ -232,7 +232,7 @@ export default function AdminPromoCodesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">프로모 코드</h1>
+          <h1 className="text-2xl font-bold text-slate-900">프로모션 코드</h1>
           <p className="text-slate-500">광고주 가입 보너스 코드를 관리하세요</p>
         </div>
         <Button onClick={() => setCreateDialogOpen(true)}>
@@ -331,7 +331,7 @@ export default function AdminPromoCodesPage() {
               ))}
             </div>
           ) : (
-            <div className="py-12 text-center text-slate-500">프로모 코드가 없습니다</div>
+            <div className="py-12 text-center text-slate-500">프로모션 코드가 없습니다</div>
           )}
         </CardContent>
       </Card>
@@ -339,7 +339,7 @@ export default function AdminPromoCodesPage() {
       <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>프로모 코드 생성</DialogTitle>
+            <DialogTitle>프로모션 코드 생성</DialogTitle>
             <DialogDescription>새로운 가입 보너스 코드를 생성합니다</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -416,7 +416,7 @@ export default function AdminPromoCodesPage() {
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>프로모 코드 수정</DialogTitle>
+            <DialogTitle>프로모션 코드 수정</DialogTitle>
             <DialogDescription>{selectedCode?.code}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">

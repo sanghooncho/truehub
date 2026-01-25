@@ -72,9 +72,9 @@ export default function AdvertiserRegisterPage() {
         const errorMessages: Record<string, string> = {
           AUTH_EMAIL_EXISTS: "이미 등록된 이메일입니다.",
           VALIDATION_ERROR: "입력 정보를 확인해주세요.",
-          INVALID_PROMO_CODE: "유효하지 않은 프로모 코드입니다.",
-          PROMO_CODE_EXPIRED: "만료된 프로모 코드입니다.",
-          PROMO_CODE_EXHAUSTED: "사용 횟수가 초과된 프로모 코드입니다.",
+          INVALID_PROMO_CODE: "유효하지 않은 프로모션 코드입니다.",
+          PROMO_CODE_EXPIRED: "만료된 프로모션 코드입니다.",
+          PROMO_CODE_EXHAUSTED: "사용 횟수가 초과된 프로모션 코드입니다.",
         };
         toast.error(errorMessages[data.error?.code] || "회원가입에 실패했습니다.");
         return;
@@ -166,11 +166,11 @@ export default function AdvertiserRegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="promoCode">프로모 코드 (선택)</Label>
+              <Label htmlFor="promoCode">프로모션 코드 (선택)</Label>
               <Input
                 id="promoCode"
                 type="text"
-                placeholder="프로모 코드가 있다면 입력해주세요"
+                placeholder="프로모션 코드가 있다면 입력해주세요"
                 value={formData.promoCode}
                 onChange={(e) =>
                   setFormData({ ...formData, promoCode: e.target.value.toUpperCase() })
@@ -178,7 +178,7 @@ export default function AdvertiserRegisterPage() {
                 disabled={isLoading}
               />
               <p className="text-xs text-slate-400">
-                유효한 프로모 코드 입력 시 가입 보너스가 지급됩니다
+                유효한 프로모션 코드 입력 시 가입 보너스가 지급됩니다
               </p>
             </div>
             <Button type="submit" className="h-[52px] w-full" disabled={isLoading}>

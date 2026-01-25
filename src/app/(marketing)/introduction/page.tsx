@@ -268,9 +268,9 @@ export default function IntroductionPage() {
                 <div className="rounded-xl bg-slate-50 p-4">
                   <div className="mb-2 flex items-center gap-2">
                     <UserCheck className="text-secondary h-5 w-5" />
-                    <span className="font-semibold text-slate-900">프로모 보너스</span>
+                    <span className="font-semibold text-slate-900">가입 보너스</span>
                   </div>
-                  <p className="text-sm text-slate-600">프로모 코드 입력 시</p>
+                  <p className="text-sm text-slate-600">신규 가입 시 1,000P</p>
                 </div>
                 <div className="rounded-xl bg-slate-50 p-4">
                   <div className="mb-2 flex items-center gap-2">

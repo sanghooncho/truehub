@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
             balanceAfter: bonusAmount,
             refType: "promo_code",
             refId: promoCode.id,
-            description: `프로모 코드 보너스 (${promoCode.code})`,
+            description: `프로모션 코드 보너스 (${promoCode.code})`,
           },
         });
 
