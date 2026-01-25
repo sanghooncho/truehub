@@ -75,13 +75,13 @@ export default async function CampaignsPage() {
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-300" />
           실시간 미션 업데이트
         </div>
-        <h1 className="relative mb-3 text-2xl font-bold leading-tight">
+        <h1 className="relative mb-3 text-2xl leading-tight font-bold">
           리뷰 미션 참여하고
           <br />
           포인트로 기프티콘 교환
         </h1>
         <p className="relative text-sm leading-relaxed text-blue-100">
-          앱 리뷰 미션에 참여하고 포인트를 적립하세요.
+          🎁 가입만 해도 1,000P! 리뷰 하나면 커피 한잔 무료 ☕
           <br />
           스타벅스, 편의점 기프티콘으로 <strong className="text-white">즉시 교환</strong> 가능!
         </p>
@@ -109,8 +109,18 @@ export default async function CampaignsPage() {
       <section className="mt-8 border-t border-slate-100 bg-gradient-to-b from-slate-50/80 to-white px-5 py-8">
         <div className="mb-4 flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/25">
-            <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <svg
+              className="h-5 w-5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
             </svg>
           </div>
           <div>
@@ -123,15 +133,25 @@ export default async function CampaignsPage() {
         <div className="rounded-2xl bg-white/60 p-4 shadow-sm backdrop-blur-sm">
           <p className="mb-3 text-sm leading-relaxed text-slate-600">
             TrueHub는 앱 리뷰 미션에 참여하고 포인트를 적립할 수 있는 참여형 미션 사이트입니다.
-            적립한 포인트는 스타벅스 아메리카노, 편의점 상품권 등 다양한 기프티콘으로 교환할 수 있습니다.
-            매일 새로운 리뷰 미션이 업데이트되니 자주 방문해 주세요!
+            적립한 포인트는 스타벅스 아메리카노, 편의점 상품권 등 다양한 기프티콘으로 교환할 수
+            있습니다. 매일 새로운 리뷰 미션이 업데이트되니 자주 방문해 주세요!
           </p>
           <div className="flex flex-wrap gap-2">
-            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600">리워드 플랫폼</span>
-            <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-medium text-cyan-600">참여형 미션 사이트</span>
-            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-600">포인트 적립 사이트</span>
-            <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-medium text-violet-600">리뷰 미션</span>
-            <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">포인트 기프티콘 교환</span>
+            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600">
+              리워드 플랫폼
+            </span>
+            <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-medium text-cyan-600">
+              참여형 미션 사이트
+            </span>
+            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-600">
+              포인트 적립 사이트
+            </span>
+            <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-medium text-violet-600">
+              리뷰 미션
+            </span>
+            <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">
+              포인트 기프티콘 교환
+            </span>
           </div>
         </div>
       </section>

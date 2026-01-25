@@ -167,8 +167,10 @@ export default function LandingPage() {
                       <Users className="h-8 w-8 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-slate-900">광고주 (테스터 모집)</h3>
-                      <p className="text-slate-500">앱 피드백을 수집하고 싶은 분</p>
+                      <h3 className="text-2xl font-bold text-slate-900">테스터</h3>
+                      <p className="text-slate-500">
+                        가입만 해도 1,000P! 리뷰 하나면 커피 한잔 무료 ☕
+                      </p>
                     </div>
                   </div>
 
@@ -217,7 +219,7 @@ export default function LandingPage() {
                     </div>
                     <div>
                       <h3 className="text-2xl font-bold text-slate-900">테스터</h3>
-                      <p className="text-slate-500">리워드를 받고 싶은 분</p>
+                      <p className="text-slate-500">가입만 해도 1,000P! 리뷰 하나면 커피 ☕</p>
                     </div>
                   </div>
 
