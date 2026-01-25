@@ -449,7 +449,10 @@ export default function GiftShopPage() {
         open={!!selectedGoods && !exchangeResult}
         onOpenChange={(open) => !open && closeDialog()}
       >
-        <DialogContent className="max-w-sm overflow-hidden p-0" showCloseButton={false}>
+        <DialogContent
+          className="max-h-[90vh] max-w-sm overflow-y-auto p-0"
+          showCloseButton={false}
+        >
           <DialogHeader className="sr-only">
             <VisuallyHidden>
               <DialogTitle>상품 상세</DialogTitle>
