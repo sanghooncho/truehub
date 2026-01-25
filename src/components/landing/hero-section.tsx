@@ -57,14 +57,19 @@ export function HeroSection() {
 
         {/* CTA Buttons */}
         <div className="mb-16 flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <motion.button
-            className="group relative inline-flex h-14 min-w-[240px] items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 px-8 text-base font-bold text-white shadow-xl shadow-blue-500/30 transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/40"
-            whileTap={{ scale: 0.98 }}
-            onClick={() => (window.location.href = "/advertiser/register")}
-          >
-            <span>무료로 테스터 모집 시작하기</span>
-            <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-          </motion.button>
+          <div className="flex flex-col items-center gap-2">
+            <motion.button
+              className="group relative inline-flex h-14 min-w-[240px] items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 px-8 text-base font-bold text-white shadow-xl shadow-blue-500/30 transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/40"
+              whileTap={{ scale: 0.98 }}
+              onClick={() => (window.location.href = "/advertiser/register")}
+            >
+              <span>무료로 테스터 모집 시작하기</span>
+              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+            </motion.button>
+            <span className="text-sm font-medium text-blue-600">
+              🎟️ 프로모션 코드 입력 시 10,000원 지급
+            </span>
+          </div>
           <div className="flex flex-col items-center gap-2">
             <motion.button
               className="group inline-flex h-14 min-w-[240px] items-center justify-center rounded-2xl border border-slate-200 bg-white px-8 text-base font-bold text-slate-900 shadow-lg shadow-slate-200/50 transition-all hover:scale-[1.02] hover:border-slate-300 hover:shadow-xl"
