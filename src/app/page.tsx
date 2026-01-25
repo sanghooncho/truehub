@@ -20,7 +20,7 @@ import { CTAButton } from "@/components/landing/cta-button";
 
 export default function LandingPage() {
   return (
-    <div className="bg-white min-h-screen font-sans text-slate-900 overflow-x-hidden">
+    <div className="min-h-screen overflow-x-hidden bg-white font-sans text-slate-900">
       {/* Header */}
       <header className="fixed top-0 z-50 w-full border-b border-slate-100/50 bg-white/90 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
@@ -40,7 +40,11 @@ export default function LandingPage() {
             >
               광고주 로그인
             </Link>
-            <Button asChild size="sm" className="rounded-full px-6 font-semibold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transition-all">
+            <Button
+              asChild
+              size="sm"
+              className="rounded-full px-6 font-semibold shadow-lg shadow-blue-500/20 transition-all hover:shadow-blue-500/30"
+            >
               <Link href="/advertiser/register">광고주 시작하기</Link>
             </Button>
           </nav>
@@ -54,7 +58,7 @@ export default function LandingPage() {
         {/* Features Bar - Static SEO content */}
         <section className="relative z-10 -mt-8">
           <div className="mx-auto max-w-6xl px-6">
-            <div className="rounded-3xl bg-white shadow-2xl shadow-slate-200/50 border border-slate-100 p-8 md:p-10">
+            <div className="rounded-3xl border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/50 md:p-10">
               <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
                 <FeatureItem
                   icon={<Sparkles className="h-6 w-6" />}
@@ -89,12 +93,15 @@ export default function LandingPage() {
         <section className="py-32">
           <div className="mx-auto max-w-7xl px-6">
             <div className="mb-20 text-center">
-              <span className="inline-block mb-4 text-sm font-bold uppercase tracking-widest text-blue-600">Why TrueHub</span>
+              <span className="mb-4 inline-block text-sm font-bold tracking-widest text-blue-600 uppercase">
+                Why TrueHub
+              </span>
               <h2 className="mb-6 text-4xl font-bold text-slate-900 md:text-5xl lg:text-6xl">
                 왜 TrueHub인가요?
               </h2>
-              <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                단순한 설문조사가 아닌, 앱 테스터 모집부터 AI 피드백 분석까지 성장의 파트너가 되어드립니다.
+              <p className="mx-auto max-w-2xl text-xl text-slate-600">
+                단순한 설문조사가 아닌, 앱 테스터 모집부터 AI 피드백 분석까지 성장의 파트너가
+                되어드립니다.
               </p>
             </div>
 
@@ -131,17 +138,19 @@ export default function LandingPage() {
         </section>
 
         {/* Process Section - SEO optimized */}
-        <section className="py-32 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden">
+        <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white py-32">
           {/* Background decoration */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#8881_1px,transparent_1px),linear-gradient(to_bottom,#8881_1px,transparent_1px)] bg-[size:6rem_6rem] opacity-30" />
 
           <div className="relative z-10 mx-auto max-w-7xl px-6">
             <div className="mb-20 text-center">
-              <span className="inline-block mb-4 text-sm font-bold uppercase tracking-widest text-blue-600">How It Works</span>
+              <span className="mb-4 inline-block text-sm font-bold tracking-widest text-blue-600 uppercase">
+                How It Works
+              </span>
               <h2 className="mb-6 text-4xl font-bold text-slate-900 md:text-5xl lg:text-6xl">
                 간단한 3단계로 테스터 모집 시작
               </h2>
-              <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              <p className="mx-auto max-w-2xl text-xl text-slate-600">
                 앱 테스트 서비스를 통해 실제 사용자 피드백을 빠르게 수집하세요.
               </p>
             </div>
@@ -149,9 +158,9 @@ export default function LandingPage() {
             <div className="grid gap-8 lg:grid-cols-2">
               {/* Advertiser Flow */}
               <AnimatedCard delay={0.1}>
-                <div className="group relative rounded-[2rem] bg-white p-10 md:p-12 shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:shadow-blue-100/50 transition-all duration-500">
+                <div className="group relative rounded-[2rem] border border-slate-100 bg-white p-10 shadow-xl shadow-slate-200/50 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-100/50 md:p-12">
                   {/* Gradient accent */}
-                  <div className="absolute top-0 left-0 right-0 h-1.5 rounded-t-[2rem] bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500" />
+                  <div className="absolute top-0 right-0 left-0 h-1.5 rounded-t-[2rem] bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500" />
 
                   <div className="mb-10 flex items-center gap-4">
                     <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30">
@@ -184,10 +193,10 @@ export default function LandingPage() {
                     />
                   </div>
 
-                  <div className="mt-10 pt-8 border-t border-slate-100">
+                  <div className="mt-10 border-t border-slate-100 pt-8">
                     <Link
                       href="/advertiser/register"
-                      className="group/link inline-flex items-center gap-2 text-blue-600 font-bold text-lg hover:gap-3 transition-all"
+                      className="group/link inline-flex items-center gap-2 text-lg font-bold text-blue-600 transition-all hover:gap-3"
                     >
                       무료로 테스터 모집 시작하기
                       <ArrowRight className="h-5 w-5" />
@@ -198,9 +207,9 @@ export default function LandingPage() {
 
               {/* Tester Flow */}
               <AnimatedCard delay={0.2}>
-                <div className="group relative rounded-[2rem] bg-white p-10 md:p-12 shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:shadow-emerald-100/50 transition-all duration-500">
+                <div className="group relative rounded-[2rem] border border-slate-100 bg-white p-10 shadow-xl shadow-slate-200/50 transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-100/50 md:p-12">
                   {/* Gradient accent */}
-                  <div className="absolute top-0 left-0 right-0 h-1.5 rounded-t-[2rem] bg-gradient-to-r from-emerald-500 via-emerald-500 to-cyan-500" />
+                  <div className="absolute top-0 right-0 left-0 h-1.5 rounded-t-[2rem] bg-gradient-to-r from-emerald-500 via-emerald-500 to-cyan-500" />
 
                   <div className="mb-10 flex items-center gap-4">
                     <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30">
@@ -233,10 +242,10 @@ export default function LandingPage() {
                     />
                   </div>
 
-                  <div className="mt-10 pt-8 border-t border-slate-100">
+                  <div className="mt-10 border-t border-slate-100 pt-8">
                     <Link
                       href="/tester/campaigns"
-                      className="group/link inline-flex items-center gap-2 text-emerald-600 font-bold text-lg hover:gap-3 transition-all"
+                      className="group/link inline-flex items-center gap-2 text-lg font-bold text-emerald-600 transition-all hover:gap-3"
                     >
                       테스터로 활동하기
                       <ArrowRight className="h-5 w-5" />
@@ -251,22 +260,22 @@ export default function LandingPage() {
         {/* Stats Section */}
         <section className="py-24">
           <div className="mx-auto max-w-7xl px-6">
-            <div className="rounded-[2rem] bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-12 md:p-16 relative overflow-hidden">
+            <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-12 md:p-16">
               {/* Background decorations */}
-              <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-              <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+              <div className="absolute top-0 right-0 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
+              <div className="absolute bottom-0 left-0 h-96 w-96 rounded-full bg-cyan-500/10 blur-3xl" />
 
-              <div className="relative z-10 grid gap-12 md:grid-cols-3 text-center">
+              <div className="relative z-10 grid gap-12 text-center md:grid-cols-3">
                 <div>
-                  <div className="text-5xl md:text-6xl font-bold text-white mb-3">98%</div>
+                  <div className="mb-3 text-5xl font-bold text-white md:text-6xl">98%</div>
                   <div className="text-lg text-slate-400">피드백 신뢰도</div>
                 </div>
                 <div>
-                  <div className="text-5xl md:text-6xl font-bold text-white mb-3">24h</div>
+                  <div className="mb-3 text-5xl font-bold text-white md:text-6xl">24h</div>
                   <div className="text-lg text-slate-400">평균 피드백 수집 시간</div>
                 </div>
                 <div>
-                  <div className="text-5xl md:text-6xl font-bold text-white mb-3">3x</div>
+                  <div className="mb-3 text-5xl font-bold text-white md:text-6xl">3x</div>
                   <div className="text-lg text-slate-400">인사이트 도출 효율</div>
                 </div>
               </div>
@@ -275,38 +284,36 @@ export default function LandingPage() {
         </section>
 
         {/* CTA Section - SEO optimized */}
-        <section className="py-32 relative overflow-hidden">
+        <section className="relative overflow-hidden py-32">
           {/* Background gradient */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-cyan-600" />
 
           {/* Decorative elements */}
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl" />
+          <div className="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
+          <div className="absolute right-1/4 bottom-0 h-96 w-96 rounded-full bg-cyan-400/10 blur-3xl" />
 
           {/* Pattern overlay */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#fff1_1px,transparent_1px),linear-gradient(to_bottom,#fff1_1px,transparent_1px)] bg-[size:4rem_4rem]" />
 
           <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-            <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm px-5 py-2 text-sm font-semibold text-white border border-white/20">
+            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2 text-sm font-semibold text-white backdrop-blur-sm">
               <Zap className="h-4 w-4" />
-              <span>지금 시작하면 10,000 크레딧 증정</span>
+              <span>프로모 코드로 무료 시작 가능</span>
             </div>
 
-            <h2 className="mb-8 text-4xl font-bold text-white md:text-5xl lg:text-6xl leading-tight">
+            <h2 className="mb-8 text-4xl leading-tight font-bold text-white md:text-5xl lg:text-6xl">
               앱 테스터 모집,
               <br />
               <span className="text-cyan-300">TrueHub와 함께하세요.</span>
             </h2>
 
-            <p className="mb-12 text-xl text-blue-100 max-w-2xl mx-auto">
+            <p className="mx-auto mb-12 max-w-2xl text-xl text-blue-100">
               실제 유저의 목소리로 제품을 성장시키세요.
               <br />
               AI가 분석한 사용자 피드백으로 더 빠르게 앱을 개선할 수 있습니다.
             </p>
 
-            <CTAButton href="/advertiser/register">
-              무료로 테스터 모집 시작하기
-            </CTAButton>
+            <CTAButton href="/advertiser/register">무료로 테스터 모집 시작하기</CTAButton>
           </div>
         </section>
       </main>
@@ -314,50 +321,60 @@ export default function LandingPage() {
       {/* Footer - SEO optimized */}
       <footer className="bg-slate-900 pt-20 pb-12 text-slate-400">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="grid gap-12 md:grid-cols-4 mb-16">
+          <div className="mb-16 grid gap-12 md:grid-cols-4">
             <div className="col-span-1 md:col-span-2">
-              <Image src="/logo.png" alt="TrueHub - 앱 테스터 모집 플랫폼" width={140} height={40} className="h-8 w-auto brightness-0 invert mb-6" />
-              <p className="max-w-sm text-slate-500 leading-relaxed">
-                TrueHub는 앱 테스터 모집부터 AI 기반 사용자 피드백 분석까지,
-                제품 성장에 필요한 모든 것을 제공하는 테스터 모집 플랫폼입니다.
-                베타 테스터 모집, UX 리서치, 앱 사용성 테스트를 한 곳에서 진행하세요.
+              <Image
+                src="/logo.png"
+                alt="TrueHub - 앱 테스터 모집 플랫폼"
+                width={140}
+                height={40}
+                className="mb-6 h-8 w-auto brightness-0 invert"
+              />
+              <p className="max-w-sm leading-relaxed text-slate-500">
+                TrueHub는 앱 테스터 모집부터 AI 기반 사용자 피드백 분석까지, 제품 성장에 필요한 모든
+                것을 제공하는 테스터 모집 플랫폼입니다. 베타 테스터 모집, UX 리서치, 앱 사용성
+                테스트를 한 곳에서 진행하세요.
               </p>
             </div>
             <div>
-              <h4 className="mb-6 text-sm font-bold uppercase tracking-wider text-slate-300">서비스</h4>
+              <h4 className="mb-6 text-sm font-bold tracking-wider text-slate-300 uppercase">
+                서비스
+              </h4>
               <ul className="space-y-4">
                 <li>
-                  <Link href="/tester/campaigns" className="hover:text-white transition-colors">
+                  <Link href="/tester/campaigns" className="transition-colors hover:text-white">
                     테스터 참여
                   </Link>
                 </li>
                 <li>
-                  <Link href="/advertiser/login" className="hover:text-white transition-colors">
+                  <Link href="/advertiser/login" className="transition-colors hover:text-white">
                     광고주 로그인
                   </Link>
                 </li>
                 <li>
-                  <Link href="/advertiser/register" className="hover:text-white transition-colors">
+                  <Link href="/advertiser/register" className="transition-colors hover:text-white">
                     광고주 가입
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h4 className="mb-6 text-sm font-bold uppercase tracking-wider text-slate-300">고객지원</h4>
+              <h4 className="mb-6 text-sm font-bold tracking-wider text-slate-300 uppercase">
+                고객지원
+              </h4>
               <ul className="space-y-4">
                 <li>
-                  <Link href="/policy/terms" className="hover:text-white transition-colors">
+                  <Link href="/policy/terms" className="transition-colors hover:text-white">
                     이용약관
                   </Link>
                 </li>
                 <li>
-                  <Link href="/policy/privacy" className="hover:text-white transition-colors">
+                  <Link href="/policy/privacy" className="transition-colors hover:text-white">
                     개인정보처리방침
                   </Link>
                 </li>
                 <li>
-                  <Link href="/policy/refund" className="hover:text-white transition-colors">
+                  <Link href="/policy/refund" className="transition-colors hover:text-white">
                     환불정책
                   </Link>
                 </li>
@@ -366,20 +383,17 @@ export default function LandingPage() {
           </div>
 
           <div className="border-t border-slate-800 pt-12">
-            <div className="text-center text-sm text-slate-500 space-y-2">
+            <div className="space-y-2 text-center text-sm text-slate-500">
               <p>
-                <span className="font-semibold text-slate-400">프리뷰</span> | 대표: 조상훈 | 사업자등록번호: 659-44-01557
+                <span className="font-semibold text-slate-400">프리뷰</span> | 대표: 조상훈 |
+                사업자등록번호: 659-44-01557
               </p>
-              <p>
-                통신판매업 신고번호: 제2025-서울광진-1698호
+              <p>통신판매업 신고번호: 제2025-서울광진-1698호</p>
+              <p>주소: 서울특별시 광진구 군자로12길 46, 102동 501호(군자동, 일성파크아파트)</p>
+              <p>전화: 0502-1925-0051 | 이메일: previewapp@naver.com</p>
+              <p className="pt-4 text-slate-600">
+                &copy; {new Date().getFullYear()} 프리뷰. All rights reserved.
               </p>
-              <p>
-                주소: 서울특별시 광진구 군자로12길 46, 102동 501호(군자동, 일성파크아파트)
-              </p>
-              <p>
-                전화: 0502-1925-0051 | 이메일: previewapp@naver.com
-              </p>
-              <p className="pt-4 text-slate-600">&copy; {new Date().getFullYear()} 프리뷰. All rights reserved.</p>
             </div>
           </div>
         </div>
@@ -392,23 +406,25 @@ function FeatureItem({
   icon,
   label,
   description,
-  color
+  color,
 }: {
   icon: React.ReactNode;
   label: string;
   description: string;
-  color: 'blue' | 'violet' | 'cyan' | 'emerald';
+  color: "blue" | "violet" | "cyan" | "emerald";
 }) {
   const colorClasses = {
-    blue: 'from-blue-500 to-blue-600 shadow-blue-500/30',
-    violet: 'from-violet-500 to-violet-600 shadow-violet-500/30',
-    cyan: 'from-cyan-500 to-cyan-600 shadow-cyan-500/30',
-    emerald: 'from-emerald-500 to-emerald-600 shadow-emerald-500/30',
+    blue: "from-blue-500 to-blue-600 shadow-blue-500/30",
+    violet: "from-violet-500 to-violet-600 shadow-violet-500/30",
+    cyan: "from-cyan-500 to-cyan-600 shadow-cyan-500/30",
+    emerald: "from-emerald-500 to-emerald-600 shadow-emerald-500/30",
   };
 
   return (
     <div className="flex flex-col items-center gap-3 text-center">
-      <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${colorClasses[color]} text-white shadow-lg`}>
+      <div
+        className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${colorClasses[color]} text-white shadow-lg`}
+      >
         {icon}
       </div>
       <div>
@@ -429,35 +445,37 @@ function FeatureCard({
   icon: React.ReactNode;
   title: string;
   description: string;
-  color: 'blue' | 'cyan' | 'emerald';
+  color: "blue" | "cyan" | "emerald";
   number: string;
 }) {
   const colorClasses = {
     blue: {
-      gradient: 'from-blue-500 to-blue-600',
-      shadow: 'shadow-blue-500/20',
-      shadowHover: 'group-hover:shadow-blue-500/30',
+      gradient: "from-blue-500 to-blue-600",
+      shadow: "shadow-blue-500/20",
+      shadowHover: "group-hover:shadow-blue-500/30",
     },
     cyan: {
-      gradient: 'from-cyan-500 to-cyan-600',
-      shadow: 'shadow-cyan-500/20',
-      shadowHover: 'group-hover:shadow-cyan-500/30',
+      gradient: "from-cyan-500 to-cyan-600",
+      shadow: "shadow-cyan-500/20",
+      shadowHover: "group-hover:shadow-cyan-500/30",
     },
     emerald: {
-      gradient: 'from-emerald-500 to-emerald-600',
-      shadow: 'shadow-emerald-500/20',
-      shadowHover: 'group-hover:shadow-emerald-500/30',
+      gradient: "from-emerald-500 to-emerald-600",
+      shadow: "shadow-emerald-500/20",
+      shadowHover: "group-hover:shadow-emerald-500/30",
     },
   };
 
   return (
-    <div className={`group relative rounded-[2rem] bg-white p-8 md:p-10 shadow-xl ${colorClasses[color].shadow} border border-slate-100 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ${colorClasses[color].shadowHover}`}>
+    <div
+      className={`group relative rounded-[2rem] bg-white p-8 shadow-xl md:p-10 ${colorClasses[color].shadow} border border-slate-100 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ${colorClasses[color].shadowHover}`}
+    >
       {/* Number badge */}
-      <div className="absolute top-6 right-6 text-6xl font-bold text-slate-100">
-        {number}
-      </div>
+      <div className="absolute top-6 right-6 text-6xl font-bold text-slate-100">{number}</div>
 
-      <div className={`relative z-10 mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${colorClasses[color].gradient} text-white shadow-lg ${colorClasses[color].shadow}`}>
+      <div
+        className={`relative z-10 mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${colorClasses[color].gradient} text-white shadow-lg ${colorClasses[color].shadow}`}
+      >
         {icon}
       </div>
       <h3 className="relative z-10 mb-4 text-2xl font-bold text-slate-900">{title}</h3>
@@ -470,21 +488,24 @@ function ProcessStep({
   number,
   title,
   desc,
-  color
+  color,
 }: {
   number: number;
   title: string;
   desc: string;
-  color: 'blue' | 'emerald';
+  color: "blue" | "emerald";
 }) {
   const colorClasses = {
-    blue: 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30',
-    emerald: 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/30',
+    blue: "bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30",
+    emerald:
+      "bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/30",
   };
 
   return (
     <div className="flex items-start gap-5">
-      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${colorClasses[color]} text-sm font-bold`}>
+      <div
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${colorClasses[color]} text-sm font-bold`}
+      >
         {number}
       </div>
       <div>
