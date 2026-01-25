@@ -298,7 +298,7 @@ export default function LandingPage() {
           <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
             <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2 text-sm font-semibold text-white backdrop-blur-sm">
               <Zap className="h-4 w-4" />
-              <span>프로모션 코드로 무료 시작 가능</span>
+              <span>프로모션 코드 입력 시 10,000원 지급</span>
             </div>
 
             <h2 className="mb-8 text-4xl leading-tight font-bold text-white md:text-5xl lg:text-6xl">

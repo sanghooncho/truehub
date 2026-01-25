@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "TrueHub 광고주 - 테스터 모집하고 실제 피드백 받기",
     description:
-      "실제 사용자에게 앱 테스트를 맡기고 AI 기반 인사이트 리포트를 받으세요. 프로모션 코드로 무료 시작!",
+      "실제 사용자에게 앱 테스트를 맡기고 AI 기반 인사이트 리포트를 받으세요. 프로모션 코드 입력 시 10,000원 지급!",
     type: "website",
     locale: "ko_KR",
     siteName: "TrueHub",
