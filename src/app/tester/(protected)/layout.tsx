@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { User } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { BottomNav } from "@/components/tester/bottom-nav";
@@ -9,7 +10,11 @@ export default async function TesterLayout({ children }: { children: React.React
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/tester/login");
+    const headersList = await headers();
+    const fullUrl = headersList.get("x-url") || headersList.get("referer") || "";
+    const pathname = fullUrl ? new URL(fullUrl).pathname : "";
+    const callbackUrl = pathname ? encodeURIComponent(pathname) : "";
+    redirect(callbackUrl ? `/tester/login?callbackUrl=${callbackUrl}` : "/tester/login");
   }
 
   return (

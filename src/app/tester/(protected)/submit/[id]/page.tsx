@@ -561,7 +561,7 @@ function StepFeedback({
         <div className="mb-5">
           <h2 className="mb-2 text-lg font-bold text-slate-800">자유 의견</h2>
           <p className="text-sm text-slate-500">
-            앱에 대한 솔직한 의견을 {MIN_FEEDBACK_LENGTH}자 이상 작성해주세요.
+            솔직한 의견을 {MIN_FEEDBACK_LENGTH}자 이상 작성해주세요.
           </p>
         </div>
 
@@ -569,7 +569,7 @@ function StepFeedback({
           <textarea
             value={feedback}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="앱 사용 후 느낀 점, 개선 아이디어, 좋았던 점 등을 자유롭게 적어주세요..."
+            placeholder="참여하신 캠페인에 대해 솔직한 의견을 적어주세요"
             className="min-h-[180px] w-full resize-none rounded-xl bg-gradient-to-br from-slate-50 to-blue-50/50 p-4 text-base text-slate-800 transition-shadow placeholder:text-slate-400 focus:ring-2 focus:ring-blue-200 focus:outline-none"
           />
           <div className="flex justify-end">

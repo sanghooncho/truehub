@@ -1,9 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
 export default function TesterLoginPage() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/tester/campaigns";
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-slate-50 via-blue-50/50 to-cyan-50/30">
       {/* Grid pattern overlay */}
@@ -36,7 +39,7 @@ export default function TesterLoginPage() {
             </p>
             <div className="space-y-3">
               <button
-                onClick={() => signIn("kakao", { callbackUrl: "/tester/campaigns" })}
+                onClick={() => signIn("kakao", { callbackUrl })}
                 className="flex h-[52px] w-full items-center justify-center gap-3 rounded-2xl bg-[#FEE500] font-semibold text-[#191919] shadow-lg shadow-amber-200/50 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-amber-200/50 active:scale-[0.98]"
               >
                 <KakaoIcon />
@@ -44,7 +47,7 @@ export default function TesterLoginPage() {
               </button>
 
               <button
-                onClick={() => signIn("naver", { callbackUrl: "/tester/campaigns" })}
+                onClick={() => signIn("naver", { callbackUrl })}
                 className="flex h-[52px] w-full items-center justify-center gap-3 rounded-2xl bg-[#03C75A] font-semibold text-white shadow-lg shadow-emerald-200/50 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-200/50 active:scale-[0.98]"
               >
                 <NaverIcon />
@@ -52,7 +55,7 @@ export default function TesterLoginPage() {
               </button>
 
               <button
-                onClick={() => signIn("google", { callbackUrl: "/tester/campaigns" })}
+                onClick={() => signIn("google", { callbackUrl })}
                 className="flex h-[52px] w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white font-semibold text-slate-700 shadow-lg shadow-slate-200/50 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-200/50 active:scale-[0.98]"
               >
                 <GoogleIcon />

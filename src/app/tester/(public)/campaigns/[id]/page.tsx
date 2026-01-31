@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Users, Apple, Smartphone, CheckCircle2 } from "lucide-react";
 import { differenceInDays } from "date-fns";
+import { useSession } from "next-auth/react";
 
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -29,6 +30,8 @@ interface Campaign {
 export default function CampaignDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const pathname = usePathname();
+  const { data: session } = useSession();
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -237,14 +240,19 @@ export default function CampaignDetailPage() {
               모집이 마감되었어요
             </button>
           ) : (
-            <Link href={`/tester/submit/${campaignId}`}>
-              <motion.button
-                whileTap={{ scale: 0.96 }}
-                className="h-[52px] w-full rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/30 active:scale-95"
-              >
-                참여하고 {campaign.rewardAmount.toLocaleString()}P 받기
-              </motion.button>
-            </Link>
+            <motion.button
+              whileTap={{ scale: 0.96 }}
+              onClick={() => {
+                if (session?.user) {
+                  router.push(`/tester/submit/${campaignId}`);
+                } else {
+                  router.push(`/tester/login?callbackUrl=${encodeURIComponent(pathname)}`);
+                }
+              }}
+              className="h-[52px] w-full rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/30 active:scale-95"
+            >
+              참여하고 {campaign.rewardAmount.toLocaleString()}P 받기
+            </motion.button>
           )}
         </div>
       </div>
