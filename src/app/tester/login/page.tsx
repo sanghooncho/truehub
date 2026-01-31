@@ -1,12 +1,14 @@
 "use client";
 
 import Image from "next/image";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
-export default function TesterLoginPage() {
+function LoginContent() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/tester/campaigns";
+
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-slate-50 via-blue-50/50 to-cyan-50/30">
       {/* Grid pattern overlay */}
@@ -86,6 +88,14 @@ export default function TesterLoginPage() {
         </p>
       </footer>
     </div>
+  );
+}
+
+export default function TesterLoginPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">로딩중...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
 
