@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ChevronLeft, Loader2, Copy, Check, CreditCard, Zap, Clock, AlertCircle, CheckCircle2, Shield } from "lucide-react";
+import { ChevronLeft, Loader2, Copy, Check, CreditCard, Wallet, Zap, Clock, AlertCircle, CheckCircle2, Shield } from "lucide-react";
 
 interface TopupResult {
   id: string;
@@ -30,27 +30,31 @@ const PRESET_AMOUNTS = [50000, 100000, 300000, 500000, 1000000];
 export default function TopupPage() {
   const router = useRouter();
   const [amount, setAmount] = useState("");
-  const [method, setMethod] = useState<"BANK_TRANSFER" | "CARD">("CARD");
+  const [method, setMethod] = useState<"BANK_TRANSFER" | "CARD" | "KAKAOPAY">("KAKAOPAY");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<TopupResult | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const handleCardPayment = async (numAmount: number) => {
+  const handleOnlinePayment = async (numAmount: number, payMethod: "CARD" | "EASY_PAY") => {
     const paymentId = `topup_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
     // 모바일 리다이렉트를 위해 결제 정보 저장
     localStorage.setItem("pendingPaymentAmount", numAmount.toString());
     localStorage.setItem("pendingPaymentId", paymentId);
 
+    const channelKey = payMethod === "EASY_PAY"
+      ? process.env.NEXT_PUBLIC_PORTONE_KAKAOPAY_CHANNEL_KEY!
+      : process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!;
+
     try {
       const response = await PortOne.requestPayment({
         storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID!,
-        channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!,
+        channelKey,
         paymentId,
         orderName: `TrueHub 크레딧 ${numAmount.toLocaleString()}원 충전`,
         totalAmount: numAmount,
         currency: "CURRENCY_KRW",
-        payMethod: "CARD",
+        payMethod,
         customer: {
           fullName: "TrueHub 광고주",
           email: "advertiser@truehub.kr",
@@ -123,6 +127,11 @@ export default function TopupPage() {
 
     if (method === "CARD") {
       alert("현재 카드사 심사중입니다");
+      return;
+    }
+
+    if (method === "KAKAOPAY") {
+      await handleOnlinePayment(numAmount, "EASY_PAY");
       return;
     }
 
@@ -298,8 +307,18 @@ export default function TopupPage() {
               <Label>결제 방법</Label>
               <RadioGroup
                 value={method}
-                onValueChange={(v) => setMethod(v as "BANK_TRANSFER" | "CARD")}
+                onValueChange={(v) => setMethod(v as "BANK_TRANSFER" | "CARD" | "KAKAOPAY")}
               >
+                <div className="flex items-center space-x-2 rounded-lg border border-yellow-300 bg-yellow-50 p-4">
+                  <RadioGroupItem value="KAKAOPAY" id="kakaopay" />
+                  <Label htmlFor="kakaopay" className="flex-1 cursor-pointer">
+                    <span className="flex items-center gap-2 font-medium">
+                      <Wallet className="h-4 w-4 text-yellow-600" />
+                      카카오페이
+                    </span>
+                    <span className="block text-sm text-slate-500">카카오페이로 간편 결제</span>
+                  </Label>
+                </div>
                 <div className="flex items-center space-x-2 rounded-lg border p-4">
                   <RadioGroupItem value="CARD" id="card" />
                   <Label htmlFor="card" className="flex-1 cursor-pointer">

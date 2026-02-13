@@ -172,6 +172,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 결제 수단 판별 (카카오페이 등 간편결제 vs 카드)
+    const isEasyPay = paymentData.method?.type === "EASY_PAY";
+    const easyPayProvider = paymentData.method?.easyPay?.provider;
+    const refType = isEasyPay ? "easy_pay" : "card_payment";
+    const methodLabel = isEasyPay
+      ? (easyPayProvider === "KAKAOPAY" ? "카카오페이" : easyPayProvider || "간편결제")
+      : "카드 결제";
+
     // 트랜잭션으로 크레딧 충전 처리
     await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // 충전 요청 레코드 생성
@@ -183,7 +191,7 @@ export async function POST(request: NextRequest) {
           depositCode: paymentId,
           status: "CONFIRMED",
           confirmedAt: new Date(),
-          expiresAt: new Date(), // 카드 결제는 즉시 완료되므로 만료시간 불필요
+          expiresAt: new Date(), // 온라인 결제는 즉시 완료되므로 만료시간 불필요
         },
       });
 
@@ -204,9 +212,9 @@ export async function POST(request: NextRequest) {
           type: "TOPUP",
           amount,
           balanceAfter: newBalance,
-          refType: "card_payment",
+          refType,
           refId: paymentId,
-          description: `카드 결제 충전 (${paymentId})`,
+          description: `${methodLabel} 충전 (${paymentId})`,
         },
       });
     });
